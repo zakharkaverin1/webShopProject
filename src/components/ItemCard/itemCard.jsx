@@ -4,14 +4,17 @@ const ItemCard = (props) => {
     const {
         id,
         title,
+        price,
         image
     } = props
 
     return (
-        <div
-            className={styles.itemCard}>
-            <img src={image} alt={title}/>
-            <h2 id={id}>{title}</h2>
+        <div className={styles.itemCard}>
+            <img src={image} alt={title} />
+            <div className={styles.cardContent}>
+                <h2>{title}</h2>
+                <p className={styles.price}>${price}</p>
+            </div>
         </div>
 
     )

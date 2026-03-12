@@ -10,12 +10,12 @@ const ItemGallery = (props) => {
                 <ItemCard
                     key={item.id}
                     id={item.id}
+                    price={item.price}
                     title={item.title}
                     image={item.image}
                 />
             ))}
         </div>
-
     )
 }
 
