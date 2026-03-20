@@ -19,7 +19,6 @@ const ItemCard = (props) => {
                 </div>
             </div>
         </Link>
-
     )
 }
 

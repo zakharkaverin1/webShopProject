@@ -1,0 +1,36 @@
+  .description {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  img{
+    max-width: 1400px;
+    max-height: 70%;
+    object-fit: contain;
+  }
+  .text_description {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    h1 {
+      font-size: 28px;
+      margin: 0;
+    }
+
+    p {
+      font-size: 24px;
+      font-weight: bold;
+      color: aquamarine;
+      margin: 0;
+    }
+  }
+
+  .description_not_found {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+  }
