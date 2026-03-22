@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./Description.module.scss";
-import { getItemById } from "../../utils/functions.js"; // .js можно опустить
+import { getItemById } from "../../utils/functions.js";
+import Carousel from "../Carousel/carousel.jsx"; // .js можно опустить
 
 const Description = (props) => {
     const {id} = props;
@@ -12,10 +13,11 @@ const Description = (props) => {
 
     return (
         <div className={styles.description}>
-            <img src={item.image} alt={item.title} />
+            <Carousel images={item.image}/>
             <div className={styles.text_description}>
                 <h1>{item.title}</h1>
                 <p>{item.price} ₽</p>
+                <p>{item.description}</p>
             </div>
         </div>
     );
