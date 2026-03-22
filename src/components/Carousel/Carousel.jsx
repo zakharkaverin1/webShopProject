@@ -1,4 +1,5 @@
 import {useState} from "react";
+import styles from "./Carousel.module.scss";
 
 const Carousel = (props) => {
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -28,7 +29,7 @@ const Carousel = (props) => {
     }
 
     return (
-        <div className="carousel">
+        <div className={styles.carousel}>
             <img src={images[currentIndex]} alt={`Фото ${currentIndex + 1}`}/>
             {moreThanOneImage && (
                 <>

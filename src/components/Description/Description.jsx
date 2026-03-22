@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Description.module.scss";
 import { getItemById } from "../../utils/functions.js";
-import Carousel from "../Carousel/carousel.jsx"; // .js можно опустить
+import Carousel from "../Carousel/Carousel.jsx"; // .js можно опустить
 
 const Description = (props) => {
     const {id} = props;
