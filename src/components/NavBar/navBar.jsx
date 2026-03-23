@@ -1,20 +1,26 @@
+import { useState } from "react";
 import styles from "./navBar.module.scss";
 import Button from "../Button/Button.jsx";
 import Field from "../Field/Field.jsx";
 
-const NavBar = () => {
-    return (
+const NavBar = (props) => {
+    const {onSearch} = props;
+    const [localSearch, setLocalSearch] = useState("");
 
+    return (
         <div className={styles.navBar}>
             <Field
-            placeholder="Поиск по названию"
+                placeholder="Поиск по названию"
+                value={localSearch}
+                onChange={(i) => setLocalSearch(i.target.value)}
             />
             <Button
-            className={styles.search}
-            children='Поиск'
-            onClick={() => {}} //заглушка пока что
-            ></Button>
+                className={styles.search}
+                children='Поиск'
+                onClick={onSearch(localSearch)}
+            />
         </div>
     )
 }
-export default NavBar
+
+export default NavBar;

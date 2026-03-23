@@ -25,7 +25,17 @@ a:hover{
 
 }
 .cardContent{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+    padding: 20px;
 
+    h2 {
+        margin: 0 0 8px 0;
+    }
 }
 
 .price{
