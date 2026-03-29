@@ -17,7 +17,7 @@ const NavBar = (props) => {
             <Button
                 className={styles.search}
                 children='Поиск'
-                onClick={onSearch(localSearch)}
+                onClick={() => onSearch(localSearch)}
             />
         </div>
     )

@@ -12,14 +12,14 @@
     gap: 16px;
 
     h1 {
-      font-size: 28px;
+      font-size: 1.8rem;
       margin: 0;
     }
 
     p {
-      font-size: 24px;
+      font-size: 1.2rem;
       font-weight: bold;
-      color: var(--color-light);
+      color: var(--text-primary);
       margin: 0;
     }
   }
@@ -27,5 +27,5 @@
   .description_not_found {
     text-align: center;
     padding: 40px;
-    font-size: 18px;
+    font-size: 1rem;
   }

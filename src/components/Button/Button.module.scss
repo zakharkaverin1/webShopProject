@@ -1,3 +1,16 @@
-.button{
+.button {
+  display: flex;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: var(--primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
 
+  &:hover {
+    background-color: var(--primary-hover);
+  }
 }

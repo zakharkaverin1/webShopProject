@@ -6,7 +6,7 @@ const allItems = [
     { id: 5, title: 'OnePlus 12', price: 95000, image: './images/oneplus.jpg' },
     { id: 6, title: 'Sony Xperia',price: 84900, image: './images/sony.jpg' },
     { id: 7, title: 'Iphone 16', price: 200000, image: './images/oneplus.jpg' },
-    { id: 8, title: 'Huawei', price: 120000, image: './images/sony.jpg' }
+
 ]
 
 export default allItems

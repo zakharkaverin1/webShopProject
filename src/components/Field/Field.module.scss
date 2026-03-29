@@ -1,7 +1,24 @@
-.field{
-
+.field {
+  width: 100%;
 }
 
-.input{
+.input {
+  width: 95%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  outline: none;
 
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  &:focus {
+    border-color: var(--border-focus);
+    box-shadow: var(--shadow-md);
+  }
 }
