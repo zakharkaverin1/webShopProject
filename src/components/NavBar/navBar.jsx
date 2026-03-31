@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./navBar.module.scss";
 import Button from "../Button/Button.jsx";
 import Field from "../Field/Field.jsx";
+import SocialLinks from "../SocialLinks/socialLinks.jsx";
 
 const NavBar = (props) => {
     const {onSearch} = props;
@@ -19,6 +20,7 @@ const NavBar = (props) => {
                 children='Поиск'
                 onClick={() => onSearch(localSearch)}
             />
+            <SocialLinks></SocialLinks>
         </div>
     )
 }

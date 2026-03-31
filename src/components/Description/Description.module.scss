@@ -1,9 +1,21 @@
-  .description {
+
+.description {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 30px;
     margin: 0 auto;
     padding: 20px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 15px;
+    }
+
+    @media (max-width: 480px) {
+      gap: 15px;
+      padding: 10px;
+    }
   }
 
   .text_description {
@@ -22,7 +34,13 @@
       color: var(--text-primary);
       margin: 0;
     }
+
+    .linksText{
+      font-size: 2rem;
+    }
   }
+
+
 
   .description_not_found {
     text-align: center;

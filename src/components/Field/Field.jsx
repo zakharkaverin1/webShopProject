@@ -2,14 +2,13 @@ import styles from './Field.module.scss'
 
 const Field = (props) => {
     const {
-        className = '',
         placeholder,
         value = '',
         onChange
     } = props
 
     return (
-        <div className={`${styles.field} ${className}`}>
+        <div className={`${styles.field}`}>
             <input
                 className={styles.input}
                 placeholder={placeholder}

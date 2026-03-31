@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "./Description.module.scss";
 import { getItemById } from "../../utils/functions.js";
-import Carousel from "../Carousel/Carousel.jsx"; // .js можно опустить
+import Carousel from "../Carousel/Carousel.jsx";
+import SocialLinks from "../SocialLinks/socialLinks.jsx";
 
 const Description = (props) => {
     const {id} = props;
@@ -18,7 +19,10 @@ const Description = (props) => {
                 <h1>{item.title}</h1>
                 <p>{item.price} ₽</p>
                 <p>{item.description}</p>
+                <p className={styles.linksText}>Связь с нами</p>
+                <SocialLinks></SocialLinks>
             </div>
+
         </div>
     );
 }
