@@ -5,7 +5,7 @@ import Field from "../Field/Field.jsx";
 import SocialLinks from "../SocialLinks/socialLinks.jsx";
 
 const NavBar = (props) => {
-    const {onSearch, components} = props;
+    const {onSearch} = props;
     const [localSearch, setLocalSearch] = useState("");
 
     return (
