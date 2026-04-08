@@ -17,14 +17,39 @@ const AddForm = () => {
             return;
         }
 
-        console.log("Товар для отправки:", formData);
-
-        setFormData({
-            itemTitle: '',
-            itemPrice: '',
-            itemDescription: '',
-            itemImages: []
+        const formDataToSend = new FormData();
+        formDataToSend.append('itemTitle', formData.itemTitle);
+        formDataToSend.append('itemPrice', formData.itemPrice);
+        formDataToSend.append('itemDescription', formData.itemDescription);
+        formData.itemImages.forEach((file) => {
+            formDataToSend.append('itemImages', file);
         });
+
+        fetch('http://localhost:8000/api/products', {
+            method: "POST",
+            body: formDataToSend
+        })
+        .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Ошибка при добавлении");
+                }
+            })
+        .then(result => {
+                console.log("Товар добавлен", result);
+                setFormData({
+                    itemTitle: '',
+                    itemPrice: '',
+                    itemDescription: '',
+                    itemImages: []
+                });
+                alert("Товар успешно добавлен");
+            })
+            .catch(error => {
+                console.error("Ошибка:", error);
+                alert("Не получилось добавит ттовар");
+            });
     }
 
    const updateFormData = (fieldName, value) => {
