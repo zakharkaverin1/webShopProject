@@ -1,0 +1,12 @@
+
+# IDE
+.idea/
+
+# Database
+*.db
+shop.db
+
+# Python
+venv/
+__pycache__/
+*.pyc
