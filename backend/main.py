@@ -3,7 +3,8 @@ from flask_cors import CORS
 import sqlite3
 import random
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='images', static_url_path='/images')
+
 CORS(app)
 
 
@@ -59,6 +60,28 @@ def add_product():
         'itemDescription': description,
         'itemImages': image_paths
     }), 201
+
+
+@app.route('/api/products', methods=['GET'])
+def get_products():
+    conn = sqlite3.connect('shop.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM products')
+    products = cursor.fetchall()
+
+    columns = [desc[0] for desc in cursor.description]
+    result = []
+    for product in products:
+        product_dict = dict(zip(columns, product))
+        if product_dict.get('images'):
+            product_dict['images'] = product_dict['images'].split(',')
+        else:
+            product_dict['images'] = []
+        result.append(product_dict)
+
+    conn.close()
+    return jsonify(result)
+
 
 
 def generate_random_name():
