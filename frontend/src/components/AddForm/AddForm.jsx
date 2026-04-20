@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import AddInput from "../AddInput/AddInput.jsx";
 import Button from "../Button/Button.jsx";
 import AddImage from "../AddImage/AddImage.jsx";
+import {addItemAPI} from "../../api/api.js";
 
 const AddForm = () => {
     const [formData, setFormData] = useState({
@@ -11,32 +12,14 @@ const AddForm = () => {
         itemImages: []
     });
 
-    const submitItem = () =>    {
+    const submitItem = () => {
         if (!formData.itemTitle || !formData.itemPrice || !formData.itemDescription || !formData.itemImages.length) {
             console.log("Заполните все поля!");
             return;
         }
 
-        const formDataToSend = new FormData();
-        formDataToSend.append('itemTitle', formData.itemTitle);
-        formDataToSend.append('itemPrice', formData.itemPrice);
-        formDataToSend.append('itemDescription', formData.itemDescription);
-        formData.itemImages.forEach((file) => {
-            formDataToSend.append('itemImages', file);
-        });
-
-        fetch('http://localhost:8000/api/products', {
-            method: "POST",
-            body: formDataToSend
-        })
-        .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error("Ошибка при добавлении");
-                }
-            })
-        .then(result => {
+        addItemAPI(formData)
+            .then(result => {
                 console.log("Товар добавлен", result);
                 setFormData({
                     itemTitle: '',
@@ -48,22 +31,23 @@ const AddForm = () => {
             })
             .catch(error => {
                 console.error("Ошибка:", error);
-                alert("Не получилось добавит ттовар");
+                alert("Не получилось добавить товар");
             });
     }
 
-   const updateFormData = (fieldName, value) => {
-       setFormData({
-           ...formData,
-           [fieldName]: value
-       });
-   }
+    const updateFormData = (fieldName, value) => {
+        setFormData({
+            ...formData,
+            [fieldName]: value
+        });
+    }
     return (
         <div>
+
             <h1>Добавить новый товар</h1>
             <AddImage
                 name="itemImages"
-                onChange={(value) =>{
+                onChange={(value) => {
                     updateFormData('itemImages', value)
                 }}
             />

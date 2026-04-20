@@ -1,7 +1,9 @@
-import allItems from "../data/data.js";
+import { getAllItems } from "../api/api.js";
 
-export const getItemById = (id)  => {
-    return allItems.find(item => item.id === id);
+export const getItemById = (id) => {
+    return getAllItems().then(items => {
+        return items.filter(item => item.id === id); // Вернет массив
+    });
 }
 
 export const filterItemsByTitle = (items, searchQuery) => {
@@ -11,4 +13,4 @@ export const filterItemsByTitle = (items, searchQuery) => {
     return items.filter(item =>
         item.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
-};
+}

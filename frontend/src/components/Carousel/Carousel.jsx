@@ -1,36 +1,38 @@
-import {useState} from "react";
+import { useState } from "react";
 import styles from "./Carousel.module.scss";
 
 const Carousel = (props) => {
-    const [currentIndex, setCurrentIndex] = useState(0)
-    const {images} = props;
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const { images } = props;
+    const API_URL = 'http://localhost:8000'; // Добавляем базовый URL
+
     if (!images || images.length === 0) {
         return <div>Нет фотографий</div>;
     }
-    const moreThanOneImage = images.length > 1;
-    const next = () =>{
-        console.log(images[currentIndex])
 
-        if (currentIndex === images.length-1){
-            setCurrentIndex(0)
+    const moreThanOneImage = images.length > 1;
+
+    const next = () => {
+        console.log(images[currentIndex]);
+        if (currentIndex === images.length - 1) {
+            setCurrentIndex(0);
+        } else {
+            setCurrentIndex(currentIndex + 1);
         }
-        else{
-            setCurrentIndex(currentIndex + 1)
+    };
+
+    const prev = () => {
+        console.log(images[currentIndex]);
+        if (currentIndex === 0) {
+            setCurrentIndex(images.length - 1);
+        } else {
+            setCurrentIndex(currentIndex - 1);
         }
-    }
-    const prev = () =>{
-        console.log(images[currentIndex])
-        if (currentIndex === 0){
-            setCurrentIndex(images.length - 1)
-        }
-        else{
-            setCurrentIndex(currentIndex - 1)
-        }
-    }
+    };
 
     return (
         <div className={styles.carousel}>
-            <img src={images[currentIndex]} alt={`Фото ${currentIndex + 1}`}/>
+            <img src={`http://localhost:8000${images[currentIndex]}`} alt={`Фото ${currentIndex + 1}`} />
             {moreThanOneImage && (
                 <>
                     <button onClick={prev}>←</button>
@@ -41,4 +43,4 @@ const Carousel = (props) => {
     );
 }
 
-export default Carousel
+export default Carousel;

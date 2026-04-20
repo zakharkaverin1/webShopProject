@@ -12,7 +12,7 @@ const ItemGallery = (props) => {
                     id={item.id}
                     price={item.price}
                     title={item.title}
-                    image={item.image}
+                    image={item.images[0]}
                 />
             ))}
         </div>
