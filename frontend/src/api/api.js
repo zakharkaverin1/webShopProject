@@ -30,3 +30,15 @@ export const getAllItems = () => {
         return response.json();
     })
 }
+
+export const deleteItem = (id) => {
+    return fetch(`http://localhost:8000/api/products/${id}`, {
+        method: "DELETE",
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка при удалении товара");
+            }
+            return response.json();
+        });
+};

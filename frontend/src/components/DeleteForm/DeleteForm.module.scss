@@ -1,0 +1,115 @@
+.form {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px;
+  border: 1px solid var(--border-default);
+}
+
+.fieldGroup {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.select {
+  min-width: 150px;
+  max-width: 400px;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: var(--border-focus);
+  }
+}
+
+.itemList {
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  transition: var(--transition);
+
+  &:hover {
+    background: var(--bg-secondary);
+    border-color: var(--border-focus);
+  }
+}
+
+.itemInfo {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex: 1;
+
+  strong {
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+
+  span {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+}
+
+.deleteButton {
+  padding: 4px 10px;
+  background: #EF4444;
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 16px;
+  transition: var(--transition);
+
+  &:hover {
+    background: #DC2626;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+
+.preview {
+  padding: 12px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--text-secondary);
+
+  strong {
+    color: var(--text-primary);
+  }
+}

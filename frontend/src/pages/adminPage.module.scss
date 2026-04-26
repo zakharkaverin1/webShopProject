@@ -1,0 +1,52 @@
+.container {
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--bg-secondary);
+}
+
+.formsContainer {
+  display: flex;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.formColumn {
+  flex: 1;
+  min-width: 0;
+}
+
+.accessDenied {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: #EF4444;
+  background: var(--bg-secondary);
+}
+
+@media (max-width: 1024px) {
+  .formsContainer {
+    gap: 20px;
+  }
+
+  .adminContainer {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .formsContainer {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .adminContainer {
+    padding: 16px;
+  }
+
+  .formColumn {
+    width: 100%;
+  }
+}

@@ -10,17 +10,27 @@ const NavBar = (props) => {
 
     return (
         <div className={styles.navBar}>
-            <Field
-                placeholder="Поиск по названию"
-                value={localSearch}
-                onChange={(i) => setLocalSearch(i.target.value)}
-            />
-            <Button
-                className={styles.search}
-                children='Поиск'
-                onClick={() => onSearch(localSearch)}
-            />
-            <SocialLinks></SocialLinks>
+            <div className={styles.topRow}>
+                <img className={styles.logo} src="/assets/KenigArtikLogo.png" alt="logo"/>
+            </div>
+
+            <div className={styles.bottomRow}>
+                <div className={styles.searchContainer}>
+                    <Field
+                        className={styles.field}
+                        placeholder="Поиск по названию"
+                        value={localSearch}
+                        onChange={(i) => setLocalSearch(i.target.value)}
+                    />
+                    <Button
+                        className={styles.searchButton}
+                        onClick={() => onSearch(localSearch)}
+                    >
+                        🔍
+                    </Button>
+                </div>
+                <SocialLinks />
+            </div>
         </div>
     )
 }

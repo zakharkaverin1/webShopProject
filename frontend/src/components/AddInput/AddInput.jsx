@@ -3,6 +3,7 @@ import React from 'react';
 
 const AddInput = (props) => {
     const {
+        className,
         placeholder,
         name,
         value,
@@ -12,6 +13,7 @@ const AddInput = (props) => {
     if (type === 'textarea') {
         return (
             <textarea
+                className={className}
                 autoComplete="off"
                 name={name}
                 placeholder={placeholder}

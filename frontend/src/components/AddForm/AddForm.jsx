@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import styles from './AddForm.module.scss';
 import AddInput from "../AddInput/AddInput.jsx";
 import Button from "../Button/Button.jsx";
 import AddImage from "../AddImage/AddImage.jsx";
-import {addItemAPI} from "../../api/api.js";
+import { addItemAPI } from "../../api/api.js";
 
 const AddForm = () => {
     const [formData, setFormData] = useState({
@@ -14,7 +15,7 @@ const AddForm = () => {
 
     const submitItem = () => {
         if (!formData.itemTitle || !formData.itemPrice || !formData.itemDescription || !formData.itemImages.length) {
-            console.log("Заполните все поля!");
+            alert("Заполните все поля!");
             return;
         }
 
@@ -41,45 +42,51 @@ const AddForm = () => {
             [fieldName]: value
         });
     }
-    return (
-        <div>
 
-            <h1>Добавить новый товар</h1>
-            <AddImage
-                name="itemImages"
-                onChange={(value) => {
-                    updateFormData('itemImages', value)
-                }}
-            />
-            <AddInput
-                placeholder="Введите название товара"
-                value={formData.itemTitle}
-                name="itemTitle"
-                type='text'
-                onChange={(value) => {
-                    updateFormData('itemTitle', value)
-                }}
-            />
-            <AddInput
-                placeholder="Введите ценник в рублях"
-                value={formData.itemPrice}
-                name="itemPrice"
-                type='number'
-                onChange={(value) => {
-                    updateFormData('itemPrice', value)
-                }}
-            />
-            <AddInput
-                placeholder="Введите описание товара"
-                value={formData.itemDescription}
-                name="itemDescription"
-                type='textarea'
-                onChange={(value) => {
-                    updateFormData('itemDescription', value)
-                }}
-            />
-            <Button onClick={submitItem}>
-                Добавить товар
+    return (
+        <div className={styles.form}>
+            <h1>Добавить товар</h1>
+
+            <div className={styles.imageSection}>
+                <AddImage
+                    name="itemImages"
+                    onChange={(value) => updateFormData('itemImages', value)}
+                />
+            </div>
+
+            <div className={styles.fieldGroup}>
+                <AddInput
+                    placeholder="Название товара"
+                    value={formData.itemTitle}
+                    name="itemTitle"
+                    type='text'
+                    onChange={(value) => updateFormData('itemTitle', value)}
+                />
+            </div>
+
+            <div className={styles.fieldGroup}>
+                <AddInput
+                    placeholder="Цена в ₽"
+                    value={formData.itemPrice}
+                    name="itemPrice"
+                    type='number'
+                    onChange={(value) => updateFormData('itemPrice', value)}
+                />
+            </div>
+
+            <div className={styles.fieldGroup}>
+                <AddInput
+                    className={styles.textarea}
+                    placeholder="Описание товара"
+                    value={formData.itemDescription}
+                    name="itemDescription"
+                    type='textarea'
+                    onChange={(value) => updateFormData('itemDescription', value)}
+                />
+            </div>
+
+            <Button onClick={submitItem} >
+                Добавить
             </Button>
         </div>
     );

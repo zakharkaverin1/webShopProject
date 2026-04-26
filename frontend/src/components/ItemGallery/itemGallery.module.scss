@@ -4,4 +4,21 @@
     gap: 30px;
     max-width: 1400px;
     margin: 0 auto;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .ItemGallery {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ItemGallery {
+        gap: 8px;
+        padding: 8px;
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+    }
 }

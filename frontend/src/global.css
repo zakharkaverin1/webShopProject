@@ -4,8 +4,11 @@
     box-sizing: border-box;
 }
 
+
+
 :root {
     /* backgrounds */
+    --bg-main: #ededed;
     --bg-surface: #FFFFFF;
     --bg-secondary: #F8FAFC;
 
