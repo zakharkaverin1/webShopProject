@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
@@ -92,6 +94,36 @@ def generate_random_name():
         name += symbols[index]
     return name
 
+
+@app.route('/api/products/<int:product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    try:
+        conn = sqlite3.connect('shop.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT images FROM products WHERE id = ?', (product_id,))
+        result = cursor.fetchone()
+
+        if not result:
+            conn.close()
+            return jsonify({'error': 'Product not found'}), 404
+        images_str = result[0]
+        if images_str:
+            for image_path in images_str.split(','):
+                clean_path = image_path.lstrip('/')
+                if os.path.exists(clean_path):
+                    os.remove(clean_path)
+        cursor.execute('DELETE FROM products WHERE id = ?', (product_id,))
+        conn.commit()
+        affected_rows = cursor.rowcount
+        conn.close()
+
+        if affected_rows == 0:
+            return jsonify({'error': 'Product not found'}), 404
+
+        return jsonify({'message': f'Product {product_id} deleted successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
