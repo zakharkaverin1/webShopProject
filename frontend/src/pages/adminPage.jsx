@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import AddForm from "../components/AddForm/AddForm.jsx";
 import DeleteForm from "../components/DeleteForm/DeleteForm.jsx";
+import { verifyAdmin } from "../api/api.js";
 import styles from './adminPage.module.scss';
 
 const AdminPage = () => {
     const { password } = useParams();
-    if (password !== import.meta.env.VITE_ADMIN_PASSWORD) {
-        return (
-            <div className={styles.accessDenied}>
-                <p>Отказано в доступе</p>
-            </div>
-        );
-    }
+    const [isLogged, setIsLogged] = useState(null);
 
+    useEffect(() => {
+        if (!password) {
+            setIsLogged(false);
+            return;
+        }
+        verifyAdmin(password)
+            .then(data => {
+                setIsLogged(data.success === true);
+            });
+    }, [password]);
+    if (!isLogged) {
+        return <div className={styles.accessDenied}>Отказано в доступе</div>;
+    }
     return (
         <div className={styles.container}>
             <div className={styles.formsContainer}>

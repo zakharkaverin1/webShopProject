@@ -1,14 +1,13 @@
 import os
-
+from dotenv import load_dotenv  # ДОБАВЛЕНО: для загрузки .env
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
 import random
 
+load_dotenv()
 app = Flask(__name__, static_folder='images', static_url_path='/images')
-
 CORS(app)
-
 
 def init_db():
     conn = sqlite3.connect('shop.db')
@@ -28,6 +27,33 @@ def init_db():
 
 init_db()
 
+#проверить пароль для доступа к админке
+
+@app.route('/api/verify-admin', methods=['POST'])
+def verify_admin():
+    try:
+        data = request.json
+        password = data.get('password')
+        admin_password = os.getenv('ADMIN_PASSWORD')
+        if not admin_password:
+            admin_password = 'default_admin_password_123'
+
+        if password and password == admin_password:
+            return jsonify({
+                'success': True,
+                'message': 'Access allowed'
+            }), 200
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Incorrect password'
+            }), 403
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 # добавить товар
 @app.route('/api/products', methods=['POST'])
@@ -85,7 +111,6 @@ def get_products():
     return jsonify(result)
 
 
-
 def generate_random_name():
     symbols = "qwertyuiopasdfghjklzxcvbnm1234567890"
     name = ''
@@ -124,6 +149,7 @@ def delete_product(product_id):
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)

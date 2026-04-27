@@ -42,3 +42,19 @@ export const deleteItem = (id) => {
             return response.json();
         });
 };
+
+export const verifyAdmin = (password) => {
+    return fetch(`http://localhost:8000/api/verify-admin`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        });
+};
