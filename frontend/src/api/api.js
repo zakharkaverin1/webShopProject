@@ -7,7 +7,7 @@ export const addItemAPI = (formData) => {
         formDataToSend.append('itemImages', file);
     });
 
-    return fetch('http://localhost:8000/api/products', {
+    return fetch('/api/products', {
         method: "POST",
         body: formDataToSend
     })
@@ -20,7 +20,7 @@ export const addItemAPI = (formData) => {
 };
 
 export const getAllItems = () => {
-    return fetch('http://localhost:8000/api/products', {
+    return fetch('/api/products', {
         method: "GET",
     })
     .then(response => {
@@ -32,7 +32,7 @@ export const getAllItems = () => {
 }
 
 export const deleteItem = (id) => {
-    return fetch(`http://localhost:8000/api/products/${id}`, {
+    return fetch(`/api/products/${id}`, {
         method: "DELETE",
     })
         .then(response => {
@@ -44,7 +44,7 @@ export const deleteItem = (id) => {
 };
 
 export const verifyAdmin = (password) => {
-    return fetch(`http://localhost:8000/api/verify-admin`, {
+    return fetch(`/api/verify-admin`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
