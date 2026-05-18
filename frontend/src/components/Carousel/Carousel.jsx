@@ -4,7 +4,6 @@ import styles from "./Carousel.module.scss";
 const Carousel = (props) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const { images } = props;
-    const API_URL = 'http://localhost:8000'; // Добавляем базовый URL
 
     if (!images || images.length === 0) {
         return <div>Нет фотографий</div>;
