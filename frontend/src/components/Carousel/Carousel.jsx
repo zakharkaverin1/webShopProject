@@ -32,7 +32,7 @@ const Carousel = (props) => {
 
     return (
         <div className={styles.carousel}>
-            <img src={`http://localhost:8000${images[currentIndex]}`} alt={`Фото ${currentIndex + 1}`} />
+            <img src={images[currentIndex]} alt={`Foto ${currentIndex + 1}`} />
             {moreThanOneImage && (
                 <>
                     <button onClick={prev}>←</button>

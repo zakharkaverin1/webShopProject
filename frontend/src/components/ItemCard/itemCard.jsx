@@ -12,7 +12,7 @@ const ItemCard = (props) => {
     return (
         <Link to={`/item/${id}`}>
             <div className={styles.itemCard}>
-                <img src={`http://localhost:8000${image}`} alt={title} />
+                <img src={image} alt={title} />
                 <div className={styles.cardContent}>
                     <h2>{title}</h2>
                     <p className={styles.price}>${price}</p>
