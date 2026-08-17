@@ -1,39 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import AddForm from "../components/AddForm/AddForm.jsx";
-import DeleteForm from "../components/DeleteForm/DeleteForm.jsx";
-import { verifyAdmin } from "../api/api.js";
-import styles from './adminPage.module.scss';
+import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
-    const { password } = useParams();
-    const [isLogged, setIsLogged] = useState(null);
+    const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (!password) {
-            setIsLogged(false);
-            return;
-        }
-        verifyAdmin(password)
+        fetch('/api/check-admin', {
+            credentials: 'include'
+        })
+            .then(res => {
+                if (res.ok) {
+                    navigate('/');
+                }
+            })
+            .catch(() => {});
+    }, [navigate]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        fetch(`/api/verify-admin`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+            credentials: 'include',
+        })
+            .then(res => res.json())
             .then(data => {
-                setIsLogged(data.success === true);
-            });
-    }, [password]);
-    if (!isLogged) {
-        return <div className={styles.accessDenied}>Отказано в доступе</div>;
-    }
+                if (data.success) {
+                    navigate('/');
+                } else {
+                    alert("Неверный пароль");
+                }
+            }).catch(error => {
+            console.error('Ошибка:', error);
+            alert("Произошла ошибка при входе");
+        });
+    };
+
     return (
-        <div className={styles.container}>
-            <div className={styles.formsContainer}>
-                <div className={styles.formColumn}>
-                    <AddForm />
-                </div>
-                <div className={styles.formColumn}>
-                    <DeleteForm />
-                </div>
-            </div>
-        </div>
-    );
+        <form onSubmit={handleSubmit}>
+        <input
+            type="password"
+            placeholder="Введите пароль"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Войти как админ</button>
+    </form>);
 };
 
 export default AdminPage;

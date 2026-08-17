@@ -11,7 +11,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Routes>
                 <Route path="/" element={<MainPage/>} />
                 <Route path="/item/:id" element={<ItemPage />} />
-                <Route path="/adm/:password" element={<AdminPage />} />
+                <Route path="/adm" element={<AdminPage />} />
             </Routes>
         </BrowserRouter>
     </React.StrictMode>

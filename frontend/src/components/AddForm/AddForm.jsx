@@ -5,13 +5,16 @@ import Button from "../Button/Button.jsx";
 import AddImage from "../AddImage/AddImage.jsx";
 import { addItemAPI } from "../../api/api.js";
 
-const AddForm = () => {
+const AddForm = (props) => {
+    const {updateItems} = props;
     const [formData, setFormData] = useState({
         itemTitle: '',
         itemPrice: '',
         itemDescription: '',
         itemImages: []
     });
+    const [imageKey, setImageKey] = useState(0);
+
 
     const submitItem = () => {
         if (!formData.itemTitle || !formData.itemPrice || !formData.itemDescription || !formData.itemImages.length) {
@@ -29,6 +32,8 @@ const AddForm = () => {
                     itemImages: []
                 });
                 alert("Товар успешно добавлен");
+                setImageKey(prev => prev+1)
+                updateItems();
             })
             .catch(error => {
                 console.error("Ошибка:", error);
@@ -51,6 +56,8 @@ const AddForm = () => {
                 <AddImage
                     name="itemImages"
                     onChange={(value) => updateFormData('itemImages', value)}
+                    key={imageKey}
+                    resetKey={imageKey}
                 />
             </div>
 
@@ -73,7 +80,6 @@ const AddForm = () => {
                     onChange={(value) => updateFormData('itemPrice', value)}
                 />
             </div>
-
             <div className={styles.fieldGroup}>
                 <AddInput
                     className={styles.textarea}
@@ -85,7 +91,7 @@ const AddForm = () => {
                 />
             </div>
 
-            <Button onClick={submitItem} >
+            <Button className={styles.addButton} onClick={submitItem} >
                 Добавить
             </Button>
         </div>

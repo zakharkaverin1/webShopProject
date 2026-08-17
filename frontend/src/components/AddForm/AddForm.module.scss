@@ -1,10 +1,15 @@
 .form {
-  max-width: 500px;
+  min-width: 30%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 24px;
   border: 1px solid var(--border-default);
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
 }
 .fieldGroup {
+  height: auto;
+  width: 100%;
   margin-bottom: 16px;
 }
 
@@ -17,8 +22,10 @@
 }
 
 .input, .textarea {
-  min-width: 150px;
-  max-width: 400px;
+  width: 100%;
+  min-height: 50px;
+  min-width: 50%;
+  max-width: 100%;
   padding: 8px 12px;
   font-size: 14px;
   border: 1px solid var(--border-default);
@@ -33,5 +40,14 @@
   border: 1px dashed var(--border-default);
   border-radius: var(--radius-md);
   background: var(--bg-secondary);
+}
+
+.addButton{
+  color: var(--text-inverse);
+  background-color: var(--btn-primary);
+
+  &:hover {
+    background-color: var(--btn-primary-hover);
+  }
 }
 

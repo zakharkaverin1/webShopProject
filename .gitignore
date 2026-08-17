@@ -1,12 +1,63 @@
+# Зависимости
+node_modules/
+.pnp/
+.pnp.js
+
+# Сборка
+dist/
+dist-ssr/
+build/
+*.local
+
+# Файлы окружения
+.env
+.env.local
+.env.*.local
+
+# Кэш
+.vite/
+.cache/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # IDE
 .idea/
+.vscode/
+*.swp
+*.swo
 
-# Database
-*.db
-shop.db
+# OS
+.DS_Store
+Thumbs.db
 
 # Python
-venv/
-__pycache__/
+**/__pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+*.sqlite3
+
+# Backend data
+backend/data/
+backend/shop.db
+backend/orders.db
+backend/images/
+data/
+*.db
+
+# Временные файлы
+logs/
+*.log
+temp/
+tmp/
