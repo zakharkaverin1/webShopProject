@@ -1,15 +1,11 @@
-import {useState} from "react";
+import { useState } from "react";
 import styles from "./Carousel.module.scss";
-import Modal from "../Modal/modal.jsx";
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 
 const Carousel = (props) => {
-    const {images} = props;
+    const { images } = props;
     const [currentIndex, setCurrentIndex] = useState(0);
-    //  const [currentModalIndex, setCurrentModalIndex] = useState(0);
-    // const [isZoomed, setIsZoomed] = useState(false);
-    // const toggleZoom = () => setIsZoomed(!isZoomed);
-    //  const [openModal, setOpenModal] = useState(false);
-
 
     if (!images || images.length === 0) {
         return <div>Нет фотографий</div>;
@@ -25,58 +21,30 @@ const Carousel = (props) => {
         setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     };
 
-    { /* const nextModal = () => {
-        setCurrentModalIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    };
-
-     const prevModal = () => {
-        setCurrentModalIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-    };
-
-    const handleImageClick = () => {
-        setCurrentModalIndex(currentIndex)
-        setOpenModal(true);
-    };
-
-     const handleModalClose = () => {
-        setOpenModal(false);
-        setIsZoomed(false);
-    } */}
-
     return (
-        <>
-            { /* <Modal isOpen={openModal}
-               onClose={() => handleModalClose()}>
-            <div className={styles.modalCarousel }>
-                <img
-                    src={images[currentModalIndex]}
-                    alt={`Foto ${currentModalIndex + 1}`}
-                    className={isZoomed ? styles.zoomed : ''}
-                    onClick={toggleZoom}
-                />
-                {moreThanOneImage && (
-                    <>
-                        <button onClick={prevModal}>←</button>
-                        <button onClick={nextModal}>→</button>
-                    </>
-                )}
-            </div>
-
-        </Modal>*/}
-            <div className={styles.carousel}>
+        <div className={styles.carousel}>
+            <Zoom
+                zoomMargin={40}
+                canSwipeToUnzoom={true}
+            >
                 <img
                     src={images[currentIndex]}
                     alt={`Foto ${currentIndex + 1}`}
-                    // onClick={handleImageClick}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block'
+                    }}
                 />
-                {moreThanOneImage && (
-                    <>
-                        <button onClick={prev}>←</button>
-                        <button onClick={next}>→</button>
-                    </>
-                )}
-            </div>
-        </>
+            </Zoom>
+            {moreThanOneImage && (
+                <>
+                    <button onClick={prev} className={styles.prev}>←</button>
+                    <button onClick={next} className={styles.next}>→</button>
+                </>
+            )}
+        </div>
     );
 };
 
