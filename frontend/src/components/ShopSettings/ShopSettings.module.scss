@@ -1,0 +1,44 @@
+.settings {
+  width: 400px;
+  max-width: 90vw;
+}
+
+.title {
+  margin-bottom: 20px;
+}
+
+.section {
+  margin-bottom: 15px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 8px;
+}
+
+.colorInput {
+  width: 50px;
+  height: 35px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .settings {
+    width: 100%;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
