@@ -19,14 +19,30 @@ class ShopService:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('''
+                        CREATE TABLE IF NOT EXISTS categories (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            name TEXT NOT NULL UNIQUE
+                        )
+                    ''')
+            cursor.execute('''
                 CREATE TABLE IF NOT EXISTS products (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
                     price TEXT NOT NULL,
                     description TEXT NOT NULL,
-                    images TEXT
+                    images TEXT,
+                    category_id INTEGER,
+                    FOREIGN KEY (category_id) REFERENCES categories(id)
                 )
             ''')
+
+            cursor.execute("PRAGMA table_info(products)")
+            columns = [column[1] for column in cursor.fetchall()]
+
+            if "category_id" not in columns:
+                cursor.execute(
+                "ALTER TABLE products ADD COLUMN category_id INTEGER"
+                )
             conn.commit()
 
     def get_all_products(self):
@@ -37,17 +53,21 @@ class ShopService:
             columns = [desc[0] for desc in cursor.description]
             return [Product.create_product_from_db(row, columns) for row in rows]
 
-    def add_product(self, title, price, description, files):
+    def add_product(self, title, price, description, category_id, files):
         """Добавляет товар"""
         saved_images = self.image_service.save_images(files)
         images_str = self.image_service.images_to_string(saved_images)
-
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                'INSERT INTO products (title, price, description, images) VALUES (?, ?, ?, ?)',
-                (title, price, description, images_str)
+                '''
+                INSERT INTO products
+                (title, price, description, images, category_id)
+                VALUES (?, ?, ?, ?, ?)
+                ''',
+                (title, price, description, images_str, category_id)
             )
+
             product_id = cursor.lastrowid
             conn.commit()
 
@@ -56,7 +76,8 @@ class ShopService:
             title=title,
             price=price,
             description=description,
-            images=saved_images
+            images=saved_images,
+            category_id=category_id
         )
 
     def delete_product(self, product_id):
@@ -75,13 +96,17 @@ class ShopService:
             conn.commit()
             return True
 
-    def update_product(self, product_id, title, price, description):
-        """Обновляет данные товара (без картинок)"""
+    def update_product(self, product_id, title, price, description, category_id):
+        """Обновляет данные товара"""
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                'UPDATE products SET title = ?, price = ?, description = ? WHERE id = ?',
-                (title, price, description, product_id)
+                '''
+                UPDATE products
+                SET title = ?, price = ?, description = ?, category_id = ?
+                WHERE id = ?
+                ''',
+                (title, price, description, category_id, product_id)
             )
             conn.commit()
             return True
@@ -161,3 +186,47 @@ class ShopService:
             )
             conn.commit()
             return True
+
+
+    def get_all_categories(self):
+        """Возвращает все категории"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM categories ORDER BY name')
+            return cursor.fetchall()
+
+
+    def add_category(self, name):
+        """Добавляет категорию"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                'INSERT INTO categories (name) VALUES (?)',
+                (name,)
+            )
+
+            conn.commit()
+            return cursor.lastrowid
+
+
+    def delete_category(self, category_id):
+        """Удаляет категорию"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                'SELECT COUNT(*) FROM products WHERE category_id = ?',
+                (category_id,)
+            )
+
+            if cursor.fetchone()[0] > 0:
+                return False
+
+            cursor.execute(
+                'DELETE FROM categories WHERE id = ?',
+                (category_id,)
+            )
+
+            conn.commit()
+            return cursor.rowcount > 0
