@@ -1,23 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './AddForm.module.scss';
 import AddInput from "../AddInput/AddInput.jsx";
 import Button from "../Button/Button.jsx";
 import AddImage from "../AddImage/AddImage.jsx";
-import { addItemAPI } from "../../api/api.js";
+import { addItemAPI, getCategories } from "../../api/api.js";
 
 const AddForm = (props) => {
-    const {updateItems} = props;
+    const { updateItems } = props;
+
     const [formData, setFormData] = useState({
         itemTitle: '',
         itemPrice: '',
         itemDescription: '',
-        itemImages: []
+        itemImages: [],
+        category_id: ''
     });
+
+    const [categories, setCategories] = useState([]);
     const [imageKey, setImageKey] = useState(0);
 
+    useEffect(() => {
+        getCategories()
+            .then(result => {
+                setCategories(result);
+            })
+            .catch(error => {
+                console.error("ошибкап загрузки категорий:", error);
+            });
+    }, []);
 
     const submitItem = () => {
-        if (!formData.itemTitle || !formData.itemPrice || !formData.itemDescription || !formData.itemImages.length) {
+        if (
+            !formData.itemTitle ||
+            !formData.itemPrice ||
+            !formData.itemDescription ||
+            !formData.itemImages.length ||
+            !formData.category_id
+        ) {
             alert("Заполните все поля!");
             return;
         }
@@ -25,28 +44,32 @@ const AddForm = (props) => {
         addItemAPI(formData)
             .then(result => {
                 console.log("Товар добавлен", result);
+
                 setFormData({
                     itemTitle: '',
                     itemPrice: '',
                     itemDescription: '',
-                    itemImages: []
+                    itemImages: [],
+                    category_id: ''
                 });
+
                 alert("Товар успешно добавлен");
-                setImageKey(prev => prev+1)
+
+                setImageKey(prev => prev + 1);
                 updateItems();
             })
             .catch(error => {
                 console.error("Ошибка:", error);
                 alert("Не получилось добавить товар");
             });
-    }
+    };
 
     const updateFormData = (fieldName, value) => {
         setFormData({
             ...formData,
             [fieldName]: value
         });
-    }
+    };
 
     return (
         <div className={styles.form}>
@@ -80,6 +103,7 @@ const AddForm = (props) => {
                     onChange={(value) => updateFormData('itemPrice', value)}
                 />
             </div>
+
             <div className={styles.fieldGroup}>
                 <AddInput
                     className={styles.textarea}
@@ -90,12 +114,36 @@ const AddForm = (props) => {
                     onChange={(value) => updateFormData('itemDescription', value)}
                 />
             </div>
+            <div className={styles.fieldGroup}>
+                <select
+                    value={formData.category_id}
+                    onChange={(event) =>
+                        updateFormData(
+                            'category_id',
+                            event.target.value
+                        )
+                    }
+                >
+                    <option value="">Выберите категорию</option>
+                    {categories.map(category => (
+                        <option
+                            key={category.id}
+                            value={category.id}
+                        >
+                            {category.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
-            <Button className={styles.addButton} onClick={submitItem} >
+            <Button
+                className={styles.addButton}
+                onClick={submitItem}
+            >
                 Добавить
             </Button>
         </div>
     );
-}
+};
 
 export default AddForm;

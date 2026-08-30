@@ -2,3 +2,185 @@
   min-height: 100vh;
   background-color: var(--bg-main);
 }
+
+// mainPage
+.filterContainer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px;
+}
+.filterButton {
+   margin: 12px 20px;
+   padding: 4px 0;
+   border: none;
+   color: var(--text-primary);
+   font-size: 15px;
+   font-weight: 600;
+   cursor: pointer;
+   transition: opacity 0.2s ease;
+ }
+
+.filterButton:hover {
+  opacity: 0.7;
+}
+
+.filterOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(56, 52, 47, 0.45);
+  z-index: 100;
+  animation: fadeIn 0.2s ease;
+}
+
+.filterMenu {
+  position: fixed;
+  top: 0;
+  right: 0;
+
+  width: 320px;
+  height: 100vh;
+
+  padding: 28px;
+
+  background: var(--bg-surface);
+  color: var(--text-primary);
+
+  box-shadow: var(--shadow-lg);
+
+  z-index: 101;
+
+  animation: slideIn 0.25s ease-out;
+
+  overflow-y: auto;
+}
+
+.filterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 30px;
+}
+
+.filterHeader h2 {
+  margin: 0;
+
+  color: var(--text-primary);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.closeButton {
+  border: none;
+  background: transparent;
+
+  color: var(--text-secondary);
+
+  font-size: 20px;
+  cursor: pointer;
+
+  padding: 4px;
+
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: var(--text-primary);
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.categoryList button {
+  width: 100%;
+
+  padding: 11px 14px;
+
+  border: none;
+  border-radius: var(--radius-md);
+
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+
+  font-family: inherit;
+  font-size: 15px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+          background 0.2s ease,
+          color 0.2s ease;
+}
+
+.categoryList button:hover {
+  background: var(--navbar-hover);
+}
+
+.categoryList .activeCategory {
+  background: var(--btn-primary);
+  color: var(--text-inverse);
+}
+
+.categoryList .activeCategory:hover {
+  background: var(--btn-primary-hover);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+    .filterContainer {
+      padding: 0 15px;
+    }
+  .filterButton {
+    margin: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .filterMenu {
+    width: 85%;
+    max-width: 320px;
+
+    padding: 22px 18px;
+  }
+
+  .filterHeader {
+    margin-bottom: 22px;
+  }
+
+  .filterHeader h2 {
+    font-size: 20px;
+  }
+
+  .categoryList {
+    gap: 7px;
+  }
+
+  .categoryList button {
+    padding: 12px;
+    font-size: 14px;
+  }
+}

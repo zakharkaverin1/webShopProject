@@ -3,6 +3,8 @@ export const addItemAPI = (formData) => {
     formDataToSend.append('itemTitle', formData.itemTitle);
     formDataToSend.append('itemPrice', formData.itemPrice);
     formDataToSend.append('itemDescription', formData.itemDescription);
+    formDataToSend.append('category_id', formData.category_id);
+
     formData.itemImages.forEach((file) => {
         formDataToSend.append('itemImages', file);
     });
@@ -15,7 +17,6 @@ export const addItemAPI = (formData) => {
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Ошибка при добавлении`);
-
             }
             return response.json();
         });
@@ -28,24 +29,34 @@ export const getAllItems = () => {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error("Ошибка загрузки товаров")
+                throw new Error("Ошибка загрузки товаров");
             }
             return response.json();
-        })
-}
+        });
+};
 
-export const editItem = (id, {title, price, description}) => {
+export const editItem = (
+    id,
+    { title, price, description, category_id }
+) => {
     return fetch(`/api/products/${id}`, {
         method: "PUT",
         credentials: 'include',
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({title, price, description}),
+        body: JSON.stringify({
+            title,
+            price,
+            description,
+            category_id
+        }),
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`Ошибка при обновлении товара: ${response.status}`);
+                throw new Error(
+                    `Ошибка при обновлении товара: ${response.status}`
+                );
             }
             return response.json();
         });
@@ -79,23 +90,26 @@ export const checkAdmin = () => {
 
 export const uploadImages = (productId, files) => {
     const formData = new FormData();
+
     for (let i = 0; i < files.length; i++) {
         formData.append('itemImages', files[i]);
     }
 
     return fetch(`/api/products/${productId}/images`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-    })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => {
-                    throw new Error(err.error || 'Ошибка загрузки кеартинок')
-                });
-            }
-            return response.json();
+method: 'POST',
+    body: formData,
+    credentials: 'include',
+})
+.then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(
+                err.error || 'Ошибка загрузки картинок'
+            );
         });
+    }
+    return response.json();
+});
 };
 
 export const getShopName = () => {
@@ -118,25 +132,34 @@ export const setShopName = (newName) => {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`Ошибка при обновлении названия: ${response.status}`);
+                throw new Error(
+                    `Ошибка при обновлении названия: ${response.status}`
+                );
             }
             return response.json();
         });
 };
 
-export const replaceItemImage = (productId, file, imageIndex = 0) => {
+export const replaceItemImage = (
+    productId,
+    file,
+    imageIndex = 0
+) => {
     const formData = new FormData();
     formData.append('itemImage', file);
 
-    return fetch(`/api/products/${productId}/image/${imageIndex}`, {
-        method: 'PUT',
-        body: formData,
-        credentials: 'include',
-    })
+    return fetch(
+        `/api/products/${productId}/image/${imageIndex}`,
+        {
+            method: 'PUT',
+            body: formData,
+            credentials: 'include',
+        }
+    )
         .then(response => {
             if (!response.ok) {
                 return response.json().then(err => {
-                    throw new Error(err.error)
+                    throw new Error(err.error);
                 });
             }
             return response.json();
@@ -145,10 +168,14 @@ export const replaceItemImage = (productId, file, imageIndex = 0) => {
 
 export const deleteItemImage = (productId, imageIndex) => {
     const index = Number(imageIndex);
-    return fetch(`/api/products/${productId}/image/${index}`, {
-        method: 'DELETE',
-        credentials: 'include',
-    })
+
+    return fetch(
+        `/api/products/${productId}/image/${index}`,
+        {
+            method: 'DELETE',
+            credentials: 'include',
+        }
+    )
         .then(response => {
             if (!response.ok) {
                 return response.json().then(err => {
@@ -171,7 +198,9 @@ export const createOrderAPI = (orderData) => {
         .then(response => {
             if (!response.ok) {
                 return response.json().then(err => {
-                    throw new Error(err.error || 'Ошибка при создании заказа');
+                    throw new Error(
+                        err.error || 'Ошибка при создании заказа'
+                    );
                 });
             }
             return response.json();
@@ -191,7 +220,6 @@ export const getAllOrders = () => {
         });
 };
 
-
 export const deleteOrder = (orderId) => {
     return fetch(`/api/orders/${orderId}`, {
         method: "DELETE",
@@ -200,6 +228,95 @@ export const deleteOrder = (orderId) => {
         .then(response => {
             if (!response.ok) {
                 throw new Error("Ошибка при удалении заказа");
+            }
+            return response.json();
+        });
+};
+
+export const getCategories = () => {
+    return fetch('/api/categories', {
+        method: 'GET',
+        credentials: 'include',
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка загрузки категорий");
+            }
+            return response.json();
+        });
+};
+
+export const addCategory = (name) => {
+    return fetch('/api/categories', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(
+                        err.error || "Ошибка добавления категории"
+                    );
+                });
+            }
+            return response.json();
+        });
+};
+
+export const deleteCategory = (categoryId) => {
+    return fetch(`/api/categories/${categoryId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(
+                        err.error || "Ошибка удаления категории"
+                    );
+                });
+            }
+            return response.json();
+        });
+};
+
+export const getShopSettings = () => {
+    return fetch('/api/shopSettings', {
+        method: 'GET',
+        credentials: 'include',
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка загрузки настроек магазина");
+            }
+            return response.json();
+        });
+};
+
+export const setShopSettings = (settings) => {
+    return fetch('/api/shopSettings', {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            shopName: settings.shopName,
+            titleColor: settings.titleColor,
+            font: settings.font
+        }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(
+                        err.error || "Ошибка сохранения настроек магазина"
+                    );
+                });
             }
             return response.json();
         });

@@ -12,6 +12,7 @@ const ItemCard = (props) => {
         price,
         description,
         image,
+        category_id,
         isAdmin,
         updateItems
     } = props;
@@ -21,35 +22,63 @@ const ItemCard = (props) => {
 
     return (
         <div id="itemCard">
-            <Link to={`/item/${id}`} >
+            <Link to={`/item/${id}`}>
                 <div className={styles.itemCard}>
                     <img src={image} alt={title}/>
                     <div className={styles.overlay}>
-                        <h3 >{title}</h3>
+                        <h3>{title}</h3>
                         <p className={styles.price}>{price} ₽</p>
                     </div>
                 </div>
             </Link>
+
             {isAdmin && (
                 <div>
-                    <button id="editButton" onClick={() => {
-                        setEditModal(true);
-                    }}>Редактировать
+                    <button
+                        id="editButton"
+                        onClick={() => {
+                            setEditModal(true);
+                        }}
+                    >
+                        Редактировать
                     </button>
-                    <button id="deleteButton" onClick={() => {
-                        setDeleteModal(true)
-                    }}>Удалить
+
+                    <button
+                        id="deleteButton"
+                        onClick={() => {
+                            setDeleteModal(true)
+                        }}
+                    >
+                        Удалить
                     </button>
                 </div>
             )}
-            <Modal isOpen={editModal}
-                   onClose={() => setEditModal(false)}>
-                <EditForm id={id} title={title} description={description} price={price}
-                          onClose={() => setEditModal(false)} updateItems={updateItems}/>
+
+            <Modal
+                isOpen={editModal}
+                onClose={() => setEditModal(false)}
+            >
+                <EditForm
+                    id={id}
+                    title={title}
+                    description={description}
+                    price={price}
+                    category_id={category_id}
+                    onClose={() => setEditModal(false)}
+                    updateItems={updateItems}
+                />
             </Modal>
-            <Modal isOpen={deleteModal}
-                   onClose={() => setDeleteModal(false)}>
-                <DeleteForm id={id} title={title} onClose={() => setDeleteModal(false)} updateItems={updateItems}/>
+
+            <Modal
+                isOpen={deleteModal}
+                onClose={() => setDeleteModal(false)}
+            >
+                <DeleteForm
+                    id={id}
+                    title={title}
+                    onClose={() => setDeleteModal(false)}
+                    updateItems={updateItems}
+                />
             </Modal>
         </div>
     )

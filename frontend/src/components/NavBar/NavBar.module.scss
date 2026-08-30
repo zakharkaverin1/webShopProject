@@ -42,11 +42,6 @@
   user-select: none;
 }
 
-.topRow,
-.bottomRow {
-  display: contents;
-}
-
 .searchContainer {
   display: flex;
   align-items: center;
@@ -54,90 +49,6 @@
   flex: 1;
   max-width: 620px;
 }
-
-@media (max-width: 768px) {
-  .navBar {
-    flex-direction: column;
-    align-items: stretch;
-
-    gap: 16px;
-    padding: 16px;
-  }
-
-  .topRow {
-    display: flex;
-    justify-content: center;
-  }
-
-  .bottomRow {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .searchContainer {
-    width: 100%;
-    max-width: none;
-  }
-
-  .searchButton {
-    width: 48px;
-    height: 48px;
-  }
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdownButton {
-  background: var(--btn-primary);
-  color: var(--text-inverse);
-  padding: 8px 16px;
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: var(--btn-primary-hover);
-  }
-}
-
-.dropdownMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 200px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  padding: 8px 0;
-  margin: 4px 0 0;
-  list-style: none;
-  z-index: 100;
-
-  li {
-    a {
-      display: block;
-      padding: 10px 16px;
-      color: var(--text-primary);
-      text-decoration: none;
-      font-size: 14px;
-      transition: all 0.2s ease;
-
-      &:hover {
-        background: var(--navbar-hover);
-        color: var(--border-focus);
-      }
-    }
-  }
-}
-
 
 .orderModal {
   min-width: 500px;
@@ -232,6 +143,27 @@
 }
 
 @media (max-width: 768px) {
+  .navBar {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .logo {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+
+  .searchContainer {
+    width: 100%;
+    max-width: none;
+  }
+
+  .searchButton {
+    width: 48px;
+    height: 48px;
+  }
+
   .orderModal {
     min-width: auto;
     max-width: 95vw;
