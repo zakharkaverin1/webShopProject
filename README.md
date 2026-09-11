@@ -3,7 +3,7 @@
 ---
 
 ## Русский
-# DEMO - https://webshopproject-production-c655.up.railway.app
+# DEMO - https://webshopproject-e30v.onrender.com/
 Full-stack интернет-магазин с React frontend и Flask backend.
 Проект представляет собой full-stack приложение: работа с REST API, SQLite, загрузка изображений, CRUD-операции и Docker-контейнеризация.
 
