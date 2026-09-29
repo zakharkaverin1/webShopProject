@@ -55,9 +55,12 @@ backend/orders.db
 backend/images/
 data/
 *.db
+.env
+backend/.env
 
 # Временные файлы
 logs/
 *.log
 temp/
 tmp/
+

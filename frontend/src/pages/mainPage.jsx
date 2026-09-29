@@ -1,7 +1,7 @@
 import NavBar from "../components/NavBar/NavBar.jsx";
 import ItemGallery from "../components/ItemGallery/itemGallery.jsx";
 import React, { useState, useEffect } from "react";
-import {checkAdmin, getAllItems, getCategories} from "../api/api.js";
+import {checkAdmin, getAllItems, getCategories, logoutAdmin} from "../api/api.js";
 import { filterItemsByTitle } from "../utils/functions.js";
 import styles from "./pages.module.scss";
 
@@ -13,6 +13,7 @@ const MainPage = () => {
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [filterOpen, setFilterOpen] = useState(false);
+
 
     useEffect(() => {
         getAllItems().then(setAllItems);
@@ -45,11 +46,20 @@ const MainPage = () => {
         setFilterOpen(false);
     };
 
+    const handleLogout = () => {
+        if (!window.confirm("Выйти из режима администратора?")) return;
+
+        logoutAdmin()
+            .then(() => setIsAdmin(false))
+            .catch(() => alert("Не удалось выйти из админ-режима"));
+    };
+
     return (
         <main className={styles.page}>
             <NavBar
                 onSearch={setSearch}
                 isAdmin={isAdmin}
+                onLogout={handleLogout}
             />
 
             <div className={styles.filterContainer}>

@@ -7,7 +7,6 @@ export const apiFetch = async (url, options = {}) => {
         request.body = body;
     } else {
         request.body = JSON.stringify(body);
-        request.headers['Content-Type'] = 'application/json';
     }
 
     const response = await fetch(url, {

@@ -22,24 +22,26 @@ const Description = (props) => {
         return <div className={styles.description_not_found}>Товар не найден</div>;
     }
     return (
-        <>
-            <Modal isOpen={orderModal} onClose={() => {setOrderModal(false)}}>
+        <div className={styles.description}>
+            <Modal isOpen={orderModal} onClose={() => {
+                setOrderModal(false)
+            }}>
                 <OrderForm itemId={id} itemTitle={item.title}></OrderForm>
             </Modal>
-            <div className={styles.description}>
-                <Carousel className={styles.carousel} images={item.images}/>
-                <div className={styles.text_description}>
-                    <h1>{item.title}</h1>
-                    <p>Цена: {item.price} ₽</p>
-                    <Button className={styles.orderButton} onClick={() => {setOrderModal(true)}}>Заказать</Button>
-                    <p>{item.description}</p>
-                    <p className={styles.linksText}>Связь с нами</p>
-                    <div className={styles.socialLinksWrapper}>
-                        <SocialLinks/>
-                    </div>
+            <Carousel images={item.images}/>
+            <div className={styles.text_description}>
+                <h1>{item.title}</h1>
+                <p>Цена: {item.price} ₽</p>
+                <Button className={styles.orderButton} onClick={() => {
+                    setOrderModal(true)
+                }}>Заказать</Button>
+                <p>{item.description}</p>
+                <p className={styles.linksText}>Связь с нами</p>
+                <div className={styles.socialLinksWrapper}>
+                    <SocialLinks/>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 

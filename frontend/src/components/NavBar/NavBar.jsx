@@ -15,7 +15,7 @@ import {
 } from "../../api/api.js";
 import ShopSettings from "../ShopSettings/ShopSettings.jsx";
 
-const NavBar = ({onSearch, isAdmin}) => {
+const NavBar = ({onSearch, isAdmin, onLogout}) => {
     const [localSearch, setLocalSearch] = useState("");
     const [settingsModal, setSettingsModal] = useState(false);
     const [orderModal, setOrderModal] = useState(false);
@@ -109,7 +109,6 @@ const NavBar = ({onSearch, isAdmin}) => {
 
     const handleDeleteCategory = (categoryId) => {
         if (!window.confirm("Удалить эту категорию?")) return;
-
         deleteCategory(categoryId)
             .then(loadCategories)
             .catch(error => alert(error.message || "Не удалось удалить категорию"));
@@ -140,7 +139,6 @@ const NavBar = ({onSearch, isAdmin}) => {
                     onClose={() => setSettingsModal(false)}
                 />
             </Modal>
-
             <Modal
                 isOpen={orderModal}
                 onClose={() => setOrderModal(false)}
@@ -273,6 +271,10 @@ const NavBar = ({onSearch, isAdmin}) => {
                         <Button onClick={handleOpenCategories}>
                             Категории
                         </Button>
+                        <Button onClick={onLogout}>
+                            Выйти из админки
+                        </Button>
+
                     </>
                 )}
                 <div className={styles.searchContainer}>
