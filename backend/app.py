@@ -161,7 +161,7 @@ def verify_admin():
 def check_admin():
     if is_admin():
         return jsonify({'isAdmin': True}), 200
-    return '', 204
+    return '', 401
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
