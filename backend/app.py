@@ -3,9 +3,12 @@ from flask_cors import CORS
 import os
 import json
 from dotenv import load_dotenv
-from config import DATABASE_PATH, CONFIG_PATH, IMAGES_DIR
+from config import CONFIG_PATH, IMAGES_DIR, SECRET_KEY, ADMIN_PASSWORD
+from db import init_db
 from services.shop_service import ShopService
 from services.order_service import OrderService
+
+
 
 load_dotenv()
 
@@ -14,7 +17,7 @@ app = Flask(
     static_folder=IMAGES_DIR,
     static_url_path="/images"
 )
-app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-123')
+app.secret_key = SECRET_KEY
 app.config.update(
     SESSION_COOKIE_SAMESITE='Lax',
     SESSION_COOKIE_SECURE=True,
@@ -27,6 +30,7 @@ CORS(
     supports_credentials=True,
     origins=[r"http://localhost:*"]
 )
+init_db()
 
 shop = ShopService()
 order_service = OrderService()
@@ -142,8 +146,7 @@ def verify_admin():
     if not data:
         return jsonify({'error': 'No data provided'}), 400
     password = data.get('password')
-    admin_password = os.getenv('ADMIN_PASSWORD', 'default_admin_password_123')
-    if password == admin_password:
+    if password == ADMIN_PASSWORD:
         session['is_admin'] = True
         return jsonify({
             'success': True,
@@ -158,36 +161,7 @@ def verify_admin():
 def check_admin():
     if is_admin():
         return jsonify({'isAdmin': True}), 200
-    return jsonify({'isAdmin': False}), 401
-
-@app.route('/api/shopName/', methods=['GET'])
-def get_shop_name():
-    try:
-        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return jsonify(data.get('shopName', 'My Shop'))
-    except FileNotFoundError:
-        return jsonify('My Shop'), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/shopName/<new_name>', methods=['POST'])
-def set_shop_name(new_name):
-    auth = admin_required()
-    if auth:
-        return auth
-    try:
-        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        data = {}
-    data["shopName"] = new_name
-    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-    return jsonify({
-        'message': 'Name changed successfully',
-        'new_name': new_name
-    }), 200
+    return '', 204
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
@@ -231,8 +205,8 @@ def get_categories():
     categories = shop.get_all_categories()
     return jsonify([
         {
-            'id': category[0],
-            'name': category[1]
+            'id': category['id'],
+            'name': category['name']
         }
         for category in categories
     ])
@@ -322,6 +296,11 @@ def serve_react(path):
     if os.path.isfile(file_path):
         return send_from_directory(FRONTEND_DIR, path)
     return send_from_directory(FRONTEND_DIR, "index.html")
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    session.pop('is_admin', None)
+    return jsonify({'message': 'Logged out'}), 200
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))

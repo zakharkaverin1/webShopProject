@@ -1,6 +1,4 @@
 class Product:
-    """Создание модели товара"""
-
     def __init__(
         self,
         id=None,
@@ -18,7 +16,6 @@ class Product:
         self.category_id = category_id
 
     def to_json(self):
-        """Товар в json"""
         return {
             'id': self.id,
             'title': self.title,
@@ -29,18 +26,15 @@ class Product:
         }
 
     @classmethod
-    def create_product_from_db(cls, row, column):
-        """Создать продукт из строки в БД"""
-        data = dict(zip(column, row))
-
-        images_str = data.get('images', '')
-        images = images_str.split(',') if images_str else []
+    def create_product_from_db(cls, row):
+        images_string = row.get("images") or ""
+        images = images_string.split(",") if images_string else []
 
         return cls(
-            id=data['id'],
-            title=data['title'],
-            price=data['price'],
-            description=data['description'],
+            id=row["id"],
+            title=row["title"],
+            price=row["price"],
+            description=row["description"],
             images=images,
-            category_id=data.get('category_id')
+            category_id=row.get("category_id"),
         )

@@ -1,74 +1,36 @@
-import sqlite3
-
-from config import DATABASE_PATH, IMAGES_DIR
+from config import IMAGES_DIR
+from db import connect
 from models.product import Product
 from services.image_service import ImageService
 
 
 class ShopService:
-    """Сервис для работы с товарами"""
     def __init__(self):
-        self.db = DATABASE_PATH
         self.image_service = ImageService(IMAGES_DIR)
-        self._init_db()
-
-    def _get_connection(self):
-        return sqlite3.connect(self.db)
-
-    def _init_db(self):
-        with self._get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                        CREATE TABLE IF NOT EXISTS categories (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name TEXT NOT NULL UNIQUE
-                        )
-                    ''')
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS products (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    title TEXT NOT NULL,
-                    price TEXT NOT NULL,
-                    description TEXT NOT NULL,
-                    images TEXT,
-                    category_id INTEGER,
-                    FOREIGN KEY (category_id) REFERENCES categories(id)
-                )
-            ''')
-
-            cursor.execute("PRAGMA table_info(products)")
-            columns = [column[1] for column in cursor.fetchall()]
-
-            if "category_id" not in columns:
-                cursor.execute(
-                "ALTER TABLE products ADD COLUMN category_id INTEGER"
-                )
-            conn.commit()
 
     def get_all_products(self):
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM products')
+            cursor.execute("SELECT * FROM products")
             rows = cursor.fetchall()
-            columns = [desc[0] for desc in cursor.description]
-            return [Product.create_product_from_db(row, columns) for row in rows]
+            return [Product.create_product_from_db(row) for row in rows]
 
     def add_product(self, title, price, description, category_id, files):
-        """Добавляет товар"""
         saved_images = self.image_service.save_images(files)
         images_str = self.image_service.images_to_string(saved_images)
-        with self._get_connection() as conn:
+
+        with connect() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                '''
+                """
                 INSERT INTO products
-                (title, price, description, images, category_id)
-                VALUES (?, ?, ?, ?, ?)
-                ''',
-                (title, price, description, images_str, category_id)
-            )
+                    (title, price, description, images, category_id)
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING id
+                """,
+                (title, price, description, images_str, category_id),)
 
-            product_id = cursor.lastrowid
+            product_id = cursor.fetchone()["id"]
             conn.commit()
 
         return Product(
@@ -77,73 +39,75 @@ class ShopService:
             price=price,
             description=description,
             images=saved_images,
-            category_id=category_id
-        )
+            category_id=category_id,)
 
     def delete_product(self, product_id):
-        """Удаляет товар"""
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT images FROM products WHERE id = ?', (product_id,))
+            cursor.execute(
+                "SELECT images FROM products WHERE id = %s",
+                (product_id,),)
             row = cursor.fetchone()
 
             if not row:
                 return False
 
-            images_list = self.image_service.get_images_from_string(row[0])
+            images_list = self.image_service.get_images_from_string(row["images"])
             self.image_service.delete_images(images_list)
-            cursor.execute('DELETE FROM products WHERE id = ?', (product_id,))
+
+            cursor.execute(
+                "DELETE FROM products WHERE id = %s",
+                (product_id,),)
             conn.commit()
             return True
 
     def update_product(self, product_id, title, price, description, category_id):
-        """Обновляет данные товара"""
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                '''
+                """
                 UPDATE products
-                SET title = ?, price = ?, description = ?, category_id = ?
-                WHERE id = ?
-                ''',
-                (title, price, description, category_id, product_id)
-            )
+                SET title = %s, price = %s, description = %s, category_id = %s
+                WHERE id = %s
+                """,
+                (title, price, description, category_id, product_id),)
             conn.commit()
             return True
 
     def add_images_to_product(self, product_id, files):
-        """Добавляет новые картинки к товару"""
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT images FROM products WHERE id = ?', (product_id,))
+            cursor.execute(
+                "SELECT images FROM products WHERE id = %s",
+                (product_id,),)
             row = cursor.fetchone()
 
             if not row:
                 return None
 
-            existing = self.image_service.get_images_from_string(row[0])
+            existing = self.image_service.get_images_from_string(row["images"])
             new_images = self.image_service.save_images(files)
             all_images = existing + new_images
 
             images_str = self.image_service.images_to_string(all_images)
             cursor.execute(
-                'UPDATE products SET images = ? WHERE id = ?',
-                (images_str, product_id)
-            )
+                "UPDATE products SET images = %s WHERE id = %s",
+                (images_str, product_id),)
             conn.commit()
             return all_images
 
     def replace_product_image(self, product_id, image_index, new_file):
-        """Заменяет картинку по индексу"""
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT images FROM products WHERE id = ?', (product_id,))
+            cursor.execute(
+                "SELECT images FROM products WHERE id = %s",
+                (product_id,),)
             row = cursor.fetchone()
 
-            if not row or not row[0]:
+            if not row or not row["images"]:
                 return None
 
-            images = self.image_service.get_images_from_string(row[0])
+            images = self.image_service.get_images_from_string(row["images"])
 
             if image_index >= len(images):
                 return None
@@ -152,26 +116,27 @@ class ShopService:
             new_path = self.image_service.replace_image(old_path, new_file)
             if new_path is None:
                 return None
+
             images[image_index] = new_path
             images_str = self.image_service.images_to_string(images)
             cursor.execute(
-                'UPDATE products SET images = ? WHERE id = ?',
-                (images_str, product_id)
-            )
+                "UPDATE products SET images = %s WHERE id = %s",
+                (images_str, product_id),)
             conn.commit()
             return new_path
 
     def delete_product_image(self, product_id, image_index):
-        """Удаляет картинку по индексу"""
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT images FROM products WHERE id = ?', (product_id,))
+            cursor.execute(
+                "SELECT images FROM products WHERE id = %s",
+                (product_id,),)
             row = cursor.fetchone()
 
-            if not row or not row[0]:
+            if not row or not row["images"]:
                 return False
 
-            images = self.image_service.get_images_from_string(row[0])
+            images = self.image_service.get_images_from_string(row["images"])
 
             if image_index >= len(images):
                 return False
@@ -181,52 +146,43 @@ class ShopService:
 
             images_str = self.image_service.images_to_string(images)
             cursor.execute(
-                'UPDATE products SET images = ? WHERE id = ?',
-                (images_str, product_id)
-            )
+                "UPDATE products SET images = %s WHERE id = %s",
+                (images_str, product_id),)
             conn.commit()
             return True
 
-
     def get_all_categories(self):
-        """Возвращает все категории"""
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM categories ORDER BY name')
+            cursor.execute("SELECT * FROM categories ORDER BY name")
             return cursor.fetchall()
 
-
     def add_category(self, name):
-        """Добавляет категорию"""
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
-
             cursor.execute(
-                'INSERT INTO categories (name) VALUES (?)',
-                (name,)
-            )
+                """
+                INSERT INTO categories (name)
+                VALUES (%s)
+                RETURNING id
+                """,
+                (name,),)
 
+            category_id = cursor.fetchone()["id"]
             conn.commit()
-            return cursor.lastrowid
-
+            return category_id
 
     def delete_category(self, category_id):
-        """Удаляет категорию"""
-        with self._get_connection() as conn:
+        with connect() as conn:
             cursor = conn.cursor()
-
             cursor.execute(
-                'SELECT COUNT(*) FROM products WHERE category_id = ?',
-                (category_id,)
-            )
-
-            if cursor.fetchone()[0] > 0:
+                "SELECT COUNT(*) FROM products WHERE category_id = %s",
+                (category_id,),)
+            if cursor.fetchone()["count"] > 0:
                 return False
 
             cursor.execute(
-                'DELETE FROM categories WHERE id = ?',
-                (category_id,)
-            )
-
+                "DELETE FROM categories WHERE id = %s",
+                (category_id,),)
             conn.commit()
             return cursor.rowcount > 0

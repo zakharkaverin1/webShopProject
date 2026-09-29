@@ -2,7 +2,6 @@ from datetime import datetime
 
 
 class Order:
-    """Модель заказа"""
     def __init__(self, id=None, customer_name="", phone="", item_id=None, comment="", created_at=None):
         self.id = id
         self.customer_name = customer_name
@@ -12,7 +11,6 @@ class Order:
         self.created_at = created_at
 
     def to_json(self):
-        """Заказ в json"""
         created_at_str = self.created_at
         if isinstance(self.created_at, datetime):
             created_at_str = self.created_at.strftime('%Y-%m-%d %H:%M:%S')
@@ -26,15 +24,12 @@ class Order:
         }
 
     @classmethod
-    def create_order_from_db(cls, row, columns):
-        """Создать заказ из строки в БД"""
-        data = dict(zip(columns, row))
-
+    def create_order_from_db(cls, row):
         return cls(
-            id=data['id'],
-            customer_name=data['customer_name'],
-            phone=data['phone'],
-            item_id=data['item_id'],
-            comment=data.get('comment', ''),
-            created_at=data.get('created_at')
+            id=row["id"],
+            customer_name=row["customer_name"],
+            phone=row["phone"],
+            item_id=row["item_id"],
+            comment=row.get("comment") or "",
+            created_at=row.get("created_at"),
         )
