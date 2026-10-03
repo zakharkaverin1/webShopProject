@@ -12,6 +12,9 @@ DATA_DIR = Path(
 IMAGES_DIR = DATA_DIR / "images"
 CONFIG_PATH = DATA_DIR / "config.json"
 
+SUPABASE_URL = (os.getenv("SUPABASE_URL") or "").rstrip("/")
+SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET", "product-images")
 DATABASE_URL = os.getenv("DATABASE_URL")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")

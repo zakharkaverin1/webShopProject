@@ -1,21 +1,19 @@
-from flask import Flask, request, jsonify, session, send_from_directory
+
+from flask import Flask, request, jsonify, session, send_from_directory, redirect, abort
 from flask_cors import CORS
 import os
 import json
 from dotenv import load_dotenv
-from config import CONFIG_PATH, IMAGES_DIR, SECRET_KEY, ADMIN_PASSWORD
+from config import CONFIG_PATH, IMAGES_DIR, SECRET_KEY, ADMIN_PASSWORD, SUPABASE_URL, SUPABASE_SERVICE_KEY, SUPABASE_BUCKET
 from db import init_db
 from services.shop_service import ShopService
 from services.order_service import OrderService
-
-
 
 load_dotenv()
 
 app = Flask(
     __name__,
-    static_folder=IMAGES_DIR,
-    static_url_path="/images"
+    static_folder=None,
 )
 app.secret_key = SECRET_KEY
 app.config.update(
@@ -47,6 +45,20 @@ def admin_required():
 def get_products():
     products = shop.get_all_products()
     return jsonify([p.to_json() for p in products])
+
+
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    filename = os.path.basename(filename)
+    if SUPABASE_URL and SUPABASE_SERVICE_KEY:
+        url = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_BUCKET}/{filename}"
+        resp = redirect(url, code=302)
+        resp.headers['Cache-Control'] = 'public, max-age=86400'
+        return resp
+    if os.path.exists(os.path.join(IMAGES_DIR, filename)):
+        return send_from_directory(IMAGES_DIR, filename)
+    abort(404)
+
 
 @app.route('/api/products', methods=['POST'])
 def add_product():
