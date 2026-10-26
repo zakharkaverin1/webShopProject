@@ -41,7 +41,16 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 
       SECRET_KEY: ${SECRET_KEY}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      # argon2-хеш пароля: python security.py hash. ADMIN_PASSWORD открытым текстом оставлен только для совместимости
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+
+      # SEO: публичный адрес сайта (https://...) и коды подтверждения из Яндекс.Вебмастера и Google Search Console
+      SITE_URL: ${SITE_URL:-}
+      YANDEX_VERIFICATION: ${YANDEX_VERIFICATION:-}
+      GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
+      # номер счётчика Яндекс.Метрики (только цифры); пусто — счётчик не подключается
+      YANDEX_METRIKA_ID: ${YANDEX_METRIKA_ID:-}
 
     ports:
       - "5000:5000"
