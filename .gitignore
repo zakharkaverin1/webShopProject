@@ -64,3 +64,5 @@ logs/
 temp/
 tmp/
 
+# Claude Code: локальные агенты и настройки
+.claude/
