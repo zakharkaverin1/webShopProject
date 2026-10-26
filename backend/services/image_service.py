@@ -8,6 +8,7 @@ from config import (IMAGES_DIR,
     SUPABASE_SERVICE_KEY,
     SUPABASE_BUCKET,
 )
+from security import image_kind  # [БЕЗОП]
 
 
 class ImageService:
@@ -34,10 +35,12 @@ class ImageService:
         for file in files:
             if not file or not file.filename:
                 continue
-            ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else "jpg"
-            if ext not in {"jpg", "jpeg", "png", "webp", "gif"}:
-                logging.warning("Skipped file with unsupported extension: %s", file.filename)
+            # расширение берём из содержимого: под .png может прийти html или svg со скриптом [БЕЗОП]
+            ext = image_kind(file)
+            if not ext:
+                logging.warning("Skipped file that is not an image: %s", file.filename)  # [БЕЗОП]
                 continue
+            # удалено: проверка только по расширению имени файла
             filename = f"{uuid.uuid4()}.{ext}"
 
             if self.use_supabase:
@@ -80,12 +83,15 @@ class ImageService:
                     logging.warning("File not found: %s", filepath)
 
     def replace_image(self, old_image_path, new_file):
+        # сначала сохраняем новый файл, чтобы не потерять старый при ошибке загрузки
+        if not new_file or not new_file.filename:
+            return None
+        paths = self.save_images([new_file])
+        if not paths:
+            return None
         if old_image_path:
             self.delete_images([old_image_path])
-        if new_file and new_file.filename:
-            paths = self.save_images([new_file])
-            return paths[0] if paths else None
-        return None
+        return paths[0]
 
     def images_to_string(self, images_list):
         if not images_list:

@@ -42,9 +42,11 @@ class OrderService:
             with connection.cursor() as cursor:
                 cursor.execute(
                     """
-                    SELECT id, customer_name, phone, item_id, comment, created_at
-                    FROM orders
-                    ORDER BY created_at DESC
+                    SELECT o.id, o.customer_name, o.phone, o.item_id, o.comment, o.created_at,
+                           p.title AS item_title
+                    FROM orders o
+                    LEFT JOIN products p ON p.id = o.item_id
+                    ORDER BY o.created_at DESC
                     """
                 )
                 rows = cursor.fetchall()

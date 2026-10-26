@@ -1,5 +1,3 @@
-import os
-
 import psycopg
 from psycopg.rows import dict_row
 from config import DATABASE_URL
@@ -36,6 +34,14 @@ CREATE TABLE IF NOT EXISTS orders (
     item_id INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- миграции для уже существующих баз
+ALTER TABLE products ADD COLUMN IF NOT EXISTS materials TEXT NOT NULL DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS dimensions TEXT NOT NULL DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'available';
+
+-- item_id пустой у индивидуальных заказов (по своим размерам/эскизу)
+ALTER TABLE orders ALTER COLUMN item_id DROP NOT NULL;
 """)
 
 if __name__ == "__main__":

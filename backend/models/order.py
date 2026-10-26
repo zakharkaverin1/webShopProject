@@ -2,23 +2,25 @@ from datetime import datetime
 
 
 class Order:
-    def __init__(self, id=None, customer_name="", phone="", item_id=None, comment="", created_at=None):
+    def __init__(self, id=None, customer_name="", phone="", item_id=None, comment="", created_at=None, item_title=None):
         self.id = id
         self.customer_name = customer_name
         self.phone = phone
         self.item_id = item_id
         self.comment = comment
         self.created_at = created_at
+        self.item_title = item_title
 
     def to_json(self):
         created_at_str = self.created_at
         if isinstance(self.created_at, datetime):
-            created_at_str = self.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            created_at_str = self.created_at.strftime('%Y-%m-%dT%H:%M:%S')
         return {
             'id': self.id,
             'customer_name': self.customer_name,
             'phone': self.phone,
             'item_id': self.item_id,
+            'item_title': self.item_title,
             'comment': self.comment,
             'created_at': created_at_str
         }
@@ -32,4 +34,5 @@ class Order:
             item_id=row["item_id"],
             comment=row.get("comment") or "",
             created_at=row.get("created_at"),
+            item_title=row.get("item_title"),
         )

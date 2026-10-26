@@ -11,11 +11,33 @@ class ShopService:
     def get_all_products(self):
         with connect() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM products")
+            cursor.execute("SELECT * FROM products ORDER BY id DESC")
             rows = cursor.fetchall()
             return [Product.create_product_from_db(row) for row in rows]
 
-    def add_product(self, title, price, description, category_id, files):
+    def get_product(self, product_id):
+        with connect() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+            row = cursor.fetchone()
+            return Product.create_product_from_db(row) if row else None
+
+    def get_product_status(self, product_id):
+        """Статус товара или None, если товара нет."""
+        with connect() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT status FROM products WHERE id = %s", (product_id,))
+            row = cursor.fetchone()
+            return row["status"] if row else None
+
+    def category_exists(self, category_id):
+        with connect() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1 FROM categories WHERE id = %s", (category_id,))
+            return cursor.fetchone() is not None
+
+    def add_product(self, title, price, description, category_id, files,
+                    materials="", dimensions="", status="available"):
         saved_images = self.image_service.save_images(files)
         images_str = self.image_service.images_to_string(saved_images)
 
@@ -24,11 +46,11 @@ class ShopService:
             cursor.execute(
                 """
                 INSERT INTO products
-                    (title, price, description, images, category_id)
-                VALUES (%s, %s, %s, %s, %s)
+                    (title, price, description, images, category_id, materials, dimensions, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
                 """,
-                (title, price, description, images_str, category_id),)
+                (title, price, description, images_str, category_id, materials, dimensions, status),)
 
             product_id = cursor.fetchone()["id"]
             conn.commit()
@@ -39,7 +61,10 @@ class ShopService:
             price=price,
             description=description,
             images=saved_images,
-            category_id=category_id,)
+            category_id=category_id,
+            materials=materials,
+            dimensions=dimensions,
+            status=status,)
 
     def delete_product(self, product_id):
         with connect() as conn:
@@ -53,26 +78,30 @@ class ShopService:
                 return False
 
             images_list = self.image_service.get_images_from_string(row["images"])
-            self.image_service.delete_images(images_list)
 
             cursor.execute(
                 "DELETE FROM products WHERE id = %s",
                 (product_id,),)
             conn.commit()
-            return True
 
-    def update_product(self, product_id, title, price, description, category_id):
+        # файлы удаляем только после успешного удаления записи
+        self.image_service.delete_images(images_list)
+        return True
+
+    def update_product(self, product_id, title, price, description, category_id,
+                       materials="", dimensions="", status="available"):
         with connect() as conn:
             cursor = conn.cursor()
             cursor.execute(
                 """
                 UPDATE products
-                SET title = %s, price = %s, description = %s, category_id = %s
+                SET title = %s, price = %s, description = %s, category_id = %s,
+                    materials = %s, dimensions = %s, status = %s
                 WHERE id = %s
                 """,
-                (title, price, description, category_id, product_id),)
+                (title, price, description, category_id, materials, dimensions, status, product_id),)
             conn.commit()
-            return True
+            return cursor.rowcount > 0
 
     def add_images_to_product(self, product_id, files):
         with connect() as conn:
