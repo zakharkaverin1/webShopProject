@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "../Button/Button.jsx";
-import { getShopSettings } from "../../api/api.js";
+import styles from "./ShopSettings.module.scss";
+import {DEFAULT_SETTINGS} from "../../utils/shopSettings.js";
 
 const fonts = [
+    { name: "Cormorant Garamond", value: "'Cormorant Garamond', serif" },
+    { name: "Manrope", value: "'Manrope', sans-serif" },
     { name: "Poppins", value: "Poppins, sans-serif" },
     { name: "Arial", value: "Arial, sans-serif" },
     { name: "Georgia", value: "Georgia, serif" },
@@ -11,24 +14,13 @@ const fonts = [
     { name: "Courier New", value: "'Courier New', monospace" }
 ];
 
-const ShopSettings = ({ shopName, onSave, onClose }) => {
+const ShopSettings = ({ settings, onSave, onClose }) => {
     const [formData, setFormData] = useState({
-        shopName: shopName || "",
-        titleColor: "#38342F",
-        font: "Poppins, sans-serif"
+        shopName: settings.shopName || "",
+        titleColor: settings.titleColor || DEFAULT_SETTINGS.titleColor,
+        font: settings.font || DEFAULT_SETTINGS.font
     });
-
-    useEffect(() => {
-        getShopSettings()
-            .then(data => {
-                setFormData({
-                    shopName: data.shopName || shopName || "",
-                    titleColor: data.titleColor || "#38342F",
-                    font: data.font || "Poppins, sans-serif"
-                });
-            })
-            .catch(() => {});
-    }, [shopName]);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -39,66 +31,82 @@ const ShopSettings = ({ shopName, onSave, onClose }) => {
         }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         if (!formData.shopName.trim()) {
             alert("Название магазина не может быть пустым");
             return;
         }
 
-        onSave({
+        setIsSaving(true);
+        Promise.resolve(onSave({
             shopName: formData.shopName.trim(),
             titleColor: formData.titleColor,
             font: formData.font
-        });
+        })).finally(() => setIsSaving(false));
     };
 
     return (
-        <div>
+        <form className={styles.settings} onSubmit={handleSubmit}>
             <h3>Настройки магазина</h3>
 
-            <label>
+            <div
+                className={styles.preview}
+                style={{color: formData.titleColor, fontFamily: formData.font}}
+            >
+                {formData.shopName || "Название"}
+            </div>
+
+            <label className="label">
                 Название магазина
                 <input
+                    className="input"
                     type="text"
                     name="shopName"
+                    maxLength={60}
                     value={formData.shopName}
                     onChange={handleChange}
                 />
             </label>
 
-            <label>
-                Цвет заголовка
-                <input
-                    type="color"
-                    name="titleColor"
-                    value={formData.titleColor}
-                    onChange={handleChange}
-                />
-            </label>
+            <div className={styles.row}>
+                <label className="label">
+                    Цвет заголовка
+                    <input
+                        className={styles.colorInput}
+                        type="color"
+                        name="titleColor"
+                        value={formData.titleColor}
+                        onChange={handleChange}
+                    />
+                </label>
 
-            <label>
-                Шрифт
-                <select
-                    name="font"
-                    value={formData.font}
-                    onChange={handleChange}
-                >
-                    {fonts.map(font => (
-                        <option key={font.value} value={font.value}>
-                            {font.name}
-                        </option>
-                    ))}
-                </select>
-            </label>
+                <label className="label">
+                    Шрифт
+                    <select
+                        className="select"
+                        name="font"
+                        value={formData.font}
+                        onChange={handleChange}
+                    >
+                        {fonts.map(font => (
+                            <option key={font.value} value={font.value}>
+                                {font.name}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+            </div>
 
-            <Button onClick={handleSubmit}>
-                Сохранить
-            </Button>
-
-            <Button onClick={onClose}>
-                Отмена
-            </Button>
-        </div>
+            <div className={styles.actions}>
+                <Button variant="secondary" onClick={onClose} disabled={isSaving}>
+                    Отмена
+                </Button>
+                <Button type="submit" disabled={isSaving}>
+                    {isSaving ? 'Сохранение...' : 'Сохранить'}
+                </Button>
+            </div>
+        </form>
     );
 };
 

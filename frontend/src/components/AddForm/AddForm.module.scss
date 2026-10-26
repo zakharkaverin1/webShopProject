@@ -1,53 +1,38 @@
 .form {
-  min-width: 30%;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 24px;
-  border: 1px solid var(--border-default);
-  background-color: var(--bg-surface);
-  border-radius: var(--radius-md);
-}
-.fieldGroup {
-  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   width: 100%;
-  margin-bottom: 16px;
-}
 
-.label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 6px;
-  color: var(--text-primary);
-}
-
-.input, .textarea {
-  width: 100%;
-  min-height: 50px;
-  min-width: 50%;
-  max-width: 100%;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  background: var(--bg-surface);
-}
-
-
-.imageSection {
-  margin-bottom: 20px;
-  padding: 12px;
-  border: 1px dashed var(--border-default);
-  border-radius: var(--radius-md);
-  background: var(--bg-secondary);
-}
-
-.addButton{
-  color: var(--text-inverse);
-  background-color: var(--btn-primary);
-
-  &:hover {
-    background-color: var(--btn-primary-hover);
+  h2 {
+    margin-bottom: 0;
   }
 }
 
+.imageSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+
+  input[type="file"] {
+    width: 100%;
+    font-size: 14px;
+    cursor: pointer;
+  }
+}
+
+.hint {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+.addButton {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 4px;
+}

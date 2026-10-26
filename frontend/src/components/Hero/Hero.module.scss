@@ -1,0 +1,68 @@
+.hero {
+  background: var(--turquoise);
+  color: var(--text-inverse);
+}
+
+.inner {
+  padding-top: 64px;
+  padding-bottom: 72px;
+
+  @media (max-width: 900px) {
+    padding-top: 40px;
+    padding-bottom: 44px;
+  }
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 4px 10px;
+  background: var(--orange);
+  color: var(--text-inverse);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.title {
+  max-width: 820px;
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  line-height: 1.02;
+  font-weight: 600;
+}
+
+.subtitle {
+  max-width: 520px;
+  margin-top: 18px;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.cta {
+  min-height: 50px;
+  padding: 12px 26px;
+  font-weight: 700;
+}
+
+.outline {
+  border: 2px solid var(--text-inverse);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-inverse);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
+
+  &:hover {
+    background: var(--text-inverse);
+    color: var(--turquoise-dark);
+  }
+}

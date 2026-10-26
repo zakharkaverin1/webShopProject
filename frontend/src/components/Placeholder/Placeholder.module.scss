@@ -1,0 +1,45 @@
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 6px; // [ОПТ] подпись не прилипает к краям узкой карточки
+  container-type: inline-size; // [ОПТ] размер шрифта считается от ширины карточки, а не экрана
+}
+
+.turquoise {
+  background: var(--turquoise-light);
+  color: var(--turquoise);
+}
+
+.orange {
+  background: var(--orange-light);
+  color: var(--orange);
+}
+
+.grey {
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 16cqi, 3.6rem); // [ОПТ] было clamp(2rem, 6vw, 3.6rem): на телефоне в карточке шириной 145px слово рвалось «Магази / н»
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 2px;
+  max-width: 90%;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.text {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}

@@ -1,29 +1,39 @@
+import {useState} from "react";
 import styles from './DeleteForm.module.scss';
 import {deleteItem} from "../../api/api.js";
 import Button from "../Button/Button.jsx";
 
 const DeleteForm = (props) => {
     const {id, title, onClose, updateItems} = props;
-    const handleDelete = (productId, productTitle) => {
+    const [isDeleting, setIsDeleting] = useState(false);
 
-        if (confirm(`Удалить "${productTitle}"?`)) {
-            deleteItem(productId)
-                .then(() => {
-                    alert("Товар удален");
-                    onClose();
-                    updateItems();
-                })
-                .catch((error) => {
-                    alert(`Ошибка при удалении: ${error.message}`);
-                });
-        }
+    const handleDelete = () => {
+        setIsDeleting(true);
+        deleteItem(id)
+            .then(() => {
+                onClose();
+                updateItems();
+            })
+            .catch((error) => {
+                alert(`Ошибка при удалении: ${error.message}`);
+                setIsDeleting(false);
+            });
     };
+
     return (
         <div className={styles.form}>
-            <p>Вы хотите удалить товар {props.title}?</p>
-            <Button
-                className={styles.deleteButton}
-                onClick={() => handleDelete(id, title)}>Удалить {props.title}</Button>
+            <h3>Удалить товар?</h3>
+            <p className={styles.text}>
+                Товар «{title}» и все его фотографии будут удалены без возможности восстановления.
+            </p>
+            <div className={styles.actions}>
+                <Button variant="secondary" onClick={onClose} disabled={isDeleting}>
+                    Отмена
+                </Button>
+                <Button variant="danger" onClick={handleDelete} disabled={isDeleting}>
+                    {isDeleting ? 'Удаление...' : 'Удалить'}
+                </Button>
+            </div>
         </div>
     );
 };

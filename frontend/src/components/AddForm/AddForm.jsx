@@ -1,148 +1,75 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from './AddForm.module.scss';
-import AddInput from "../AddInput/AddInput.jsx";
 import Button from "../Button/Button.jsx";
-import AddImage from "../AddImage/AddImage.jsx";
-import { addItemAPI, getCategories } from "../../api/api.js";
+import ProductFields from "../ProductFields/ProductFields.jsx";
+import { addItemAPI } from "../../api/api.js";
+import { EMPTY_PRODUCT, productFormError, productPayload } from "../../utils/functions.js";
+
 
 const AddForm = (props) => {
-    const { updateItems } = props;
+    const { categories = [], updateItems, onClose } = props;
 
-    const [formData, setFormData] = useState({
-        itemTitle: '',
-        itemPrice: '',
-        itemDescription: '',
-        itemImages: [],
-        category_id: ''
-    });
+    const [formData, setFormData] = useState(EMPTY_PRODUCT);
+    const [images, setImages] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [categories, setCategories] = useState([]);
-    const [imageKey, setImageKey] = useState(0);
+    const submitItem = (e) => {
+        e.preventDefault();
+        if (isSubmitting) return;
 
-    useEffect(() => {
-        getCategories()
-            .then(result => {
-                setCategories(result);
-            })
-            .catch(error => {
-                console.error("ошибкап загрузки категорий:", error);
-            });
-    }, []);
-
-    const submitItem = () => {
-        if (
-            !formData.itemTitle ||
-            !formData.itemPrice ||
-            !formData.itemDescription ||
-            !formData.itemImages.length ||
-            !formData.category_id
-        ) {
-            alert("Заполните все поля!");
+        const error = productFormError(formData, {requireDescription: true});
+        if (error) {
+            alert(error);
             return;
         }
 
-        addItemAPI(formData)
-            .then(result => {
-                console.log("Товар добавлен", result);
-
-                setFormData({
-                    itemTitle: '',
-                    itemPrice: '',
-                    itemDescription: '',
-                    itemImages: [],
-                    category_id: ''
-                });
-
-                alert("Товар успешно добавлен");
-
-                setImageKey(prev => prev + 1);
+        setIsSubmitting(true);
+        addItemAPI(productPayload(formData), images)
+            .then(() => {
                 updateItems();
+                onClose?.();
             })
             .catch(error => {
                 console.error("Ошибка:", error);
-                alert("Не получилось добавить товар");
-            });
+                alert(`Не получилось добавить товар: ${error.message}`);
+            })
+            .finally(() => setIsSubmitting(false));
     };
 
     const updateFormData = (fieldName, value) => {
-        setFormData({
-            ...formData,
+        setFormData(prev => ({
+            ...prev,
             [fieldName]: value
-        });
+        }));
     };
 
     return (
-        <div className={styles.form}>
-            <h1>Добавить товар</h1>
+        <form className={styles.form} onSubmit={submitItem}>
+            <h2>Добавить товар</h2>
 
             <div className={styles.imageSection}>
-                <AddImage
-                    name="itemImages"
-                    onChange={(value) => updateFormData('itemImages', value)}
-                    key={imageKey}
-                    resetKey={imageKey}
+                <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    multiple
+                    onChange={(e) => setImages(Array.from(e.target.files))}
                 />
+                <p className={styles.hint}>
+                    {images.length > 0
+                        ? `Выбрано фото: ${images.length}. Первое станет обложкой.`
+                        : 'Фото можно добавить позже — пока будет показана заглушка.'}
+                </p>
             </div>
 
-            <div className={styles.fieldGroup}>
-                <AddInput
-                    placeholder="Название товара"
-                    value={formData.itemTitle}
-                    name="itemTitle"
-                    type='text'
-                    onChange={(value) => updateFormData('itemTitle', value)}
-                />
-            </div>
+            <ProductFields values={formData} onChange={updateFormData} categories={categories}/>
+            {categories.length === 0 && (
+                <span className={styles.hint}>Сначала создайте категорию в меню «Категории»</span>
+            )}
 
-            <div className={styles.fieldGroup}>
-                <AddInput
-                    placeholder="Цена в ₽"
-                    value={formData.itemPrice}
-                    name="itemPrice"
-                    type='number'
-                    onChange={(value) => updateFormData('itemPrice', value)}
-                />
-            </div>
-
-            <div className={styles.fieldGroup}>
-                <AddInput
-                    className={styles.textarea}
-                    placeholder="Описание товара"
-                    value={formData.itemDescription}
-                    name="itemDescription"
-                    type='textarea'
-                    onChange={(value) => updateFormData('itemDescription', value)}
-                />
-            </div>
-            <div className={styles.fieldGroup}>
-                <select
-                    value={formData.category_id}
-                    onChange={(event) =>
-                        updateFormData(
-                            'category_id',
-                            event.target.value
-                        )
-                    }
-                >
-                    <option value="">Выберите категорию</option>
-                    {categories.map(category => (
-                        <option
-                            key={category.id}
-                            value={category.id}
-                        >
-                            {category.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <Button
-                className={styles.addButton}
-                onClick={submitItem}
-            >
-                Добавить
+            <Button type="submit" className={styles.addButton} disabled={isSubmitting}>
+                {isSubmitting ? 'Сохранение...' : 'Добавить'}
             </Button>
-        </div>
+        </form>
     );
 };
 

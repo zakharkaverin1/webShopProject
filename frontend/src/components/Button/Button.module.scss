@@ -1,10 +1,64 @@
 .button {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  gap: 6px;
+  min-height: 40px;
   padding: 10px 20px;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
   white-space: nowrap;
+  transition: background-color var(--transition), transform 0.1s ease, box-shadow var(--transition);
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+.primary {
+  background: var(--btn-primary);
+  color: var(--text-inverse);
+
+  &:hover:not(:disabled) {
+    background: var(--btn-primary-hover);
+  }
+}
+
+.secondary {
+  background: var(--btn-secondary);
+  color: var(--btn-secondary-text);
+
+  &:hover:not(:disabled) {
+    background: var(--btn-secondary-hover);
+  }
+}
+
+.danger {
+  background: var(--btn-danger);
+  color: var(--text-inverse);
+
+  &:hover:not(:disabled) {
+    background: var(--btn-danger-hover);
+  }
+}
+
+.ghost {
+  background: transparent;
+  color: var(--text-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--navbar-hover);
+  }
+}
+
+.accent {
+  background: var(--orange);
+  color: var(--text-inverse);
+
+  &:hover:not(:disabled) {
+    background: var(--orange-dark);
+  }
 }

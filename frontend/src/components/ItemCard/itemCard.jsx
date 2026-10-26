@@ -4,68 +4,68 @@ import {useState} from "react";
 import Modal from "../Modal/modal.jsx";
 import DeleteForm from "../DeleteForm/DeleteForm.jsx";
 import EditForm from "../EditForm/EditForm.jsx";
+import Button from "../Button/Button.jsx";
+import Placeholder from "../Placeholder/Placeholder.jsx";
+import {formatPrice, getStatusLabel} from "../../utils/functions.js";
+import {itemPath} from "../../utils/seo.js";
 
 const ItemCard = (props) => {
-    const {
-        id,
-        title,
-        price,
-        description,
-        image,
-        category_id,
-        isAdmin,
-        updateItems
-    } = props;
+    const {item, categories, isAdmin, updateItems} = props;
+    const {id, title, price, images, category_id, materials, status} = item;
+    const image = images?.[0];
+    const category = categories?.find(c => c.id === category_id);
 
     const [editModal, setEditModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
 
     return (
-        <div id="itemCard">
-            <Link to={`/item/${id}`}>
-                <div className={styles.itemCard}>
-                    <img src={image} alt={title}/>
-                    <div className={styles.overlay}>
-                        <h3>{title}</h3>
-                        <p className={styles.price}>{price} ₽</p>
-                    </div>
+        <div className={`${styles.wrapper} ${status === 'sold' ? styles.sold : ''}`}>
+            <Link to={itemPath(id, title)} className={styles.itemCard}>
+                <div className={styles.imageBox}>
+                    {image ? (
+                        <img src={image} alt={`${title} — фото 1`} loading="lazy" decoding="async"/>
+                    ) : (
+                        <Placeholder seed={id}/>
+                    )}
+                    {status && status !== 'available' && (
+                        <span className={`${styles.badge} ${styles[status]}`}>
+                            {getStatusLabel(status)}
+                        </span>
+                    )}
+                </div>
+                <div className={styles.info}>
+                    {category && <span className={styles.category}>{category.name}</span>}
+                    <h3 className={styles.title}>{title}</h3>
+                    {materials && <p className={styles.materials}>{materials}</p>}
+                    <p className={styles.price}>{formatPrice(price)}</p>
                 </div>
             </Link>
 
             {isAdmin && (
-                <div>
-                    <button
-                        id="editButton"
-                        onClick={() => {
-                            setEditModal(true);
-                        }}
-                    >
-                        Редактировать
-                    </button>
-
-                    <button
-                        id="deleteButton"
-                        onClick={() => {
-                            setDeleteModal(true)
-                        }}
-                    >
+                <div className={styles.adminActions}>
+                    <Button variant="secondary" onClick={() => setEditModal(true)}>
+                        Изменить
+                    </Button>
+                    <Button variant="danger" onClick={() => setDeleteModal(true)}>
                         Удалить
-                    </button>
+                    </Button>
                 </div>
             )}
 
             <Modal
                 isOpen={editModal}
-                onClose={() => setEditModal(false)}
+                onClose={() => {
+                    setEditModal(false);
+                    updateItems();
+                }}
             >
                 <EditForm
-                    id={id}
-                    title={title}
-                    description={description}
-                    price={price}
-                    category_id={category_id}
-                    onClose={() => setEditModal(false)}
-                    updateItems={updateItems}
+                    item={item}
+                    categories={categories}
+                    onClose={() => {
+                        setEditModal(false);
+                        updateItems();
+                    }}
                 />
             </Modal>
 

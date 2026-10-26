@@ -1,45 +1,30 @@
-import {useState, useEffect} from "react";
+import {useState} from "react";
+import {Link} from "react-router-dom";
 import styles from "./NavBar.module.scss";
 import Button from "../Button/Button.jsx";
-import Field from "../Field/Field.jsx";
+
 import SocialLinks from "../SocialLinks/socialLinks.jsx";
 import Modal from "../Modal/modal.jsx";
 import {
-    getShopSettings,
     getAllOrders,
     deleteOrder,
-    getCategories,
     addCategory,
     deleteCategory,
     setShopSettings
 } from "../../api/api.js";
+import {formatDate} from "../../utils/functions.js";
+import {itemPath} from "../../utils/seo.js";
+import {DEFAULT_SETTINGS, setShopSettingsCache, useShopSettings} from "../../utils/shopSettings.js";
 import ShopSettings from "../ShopSettings/ShopSettings.jsx";
 
-const NavBar = ({onSearch, isAdmin, onLogout}) => {
-    const [localSearch, setLocalSearch] = useState("");
+const NavBar = ({search, onSearch, isAdmin, onLogout, categories, onCategoriesChange}) => {
     const [settingsModal, setSettingsModal] = useState(false);
     const [orderModal, setOrderModal] = useState(false);
     const [categoryModal, setCategoryModal] = useState(false);
-    const [shopName, setShopNameState] = useState("");
     const [orders, setOrders] = useState([]);
-    const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState("");
     const [loading, setLoading] = useState(false);
-    const [categoriesLoading, setCategoriesLoading] = useState(false);
-    const [titleColor, setTitleColor] = useState("#38342F");
-    const [font, setFont] = useState("Poppins, sans-serif");
-
-    useEffect(() => {
-        getShopSettings()
-            .then(data => {
-                setShopNameState(data.shopName);
-                setTitleColor(data.titleColor);
-                setFont(data.font);
-            })
-            .catch(() => {
-                setShopNameState("Магазин");
-            });
-    }, []);
+    const settings = useShopSettings();
 
     const loadOrders = () => {
         setLoading(true);
@@ -55,43 +40,15 @@ const NavBar = ({onSearch, isAdmin, onLogout}) => {
     };
 
     const handleDeleteOrder = (orderId) => {
-        if (!window.confirm(`Вы уверены, что хотите удалить заказ ${orderId}?`)) return;
+        if (!window.confirm(`Удалить заказ №${orderId}?`)) return;
 
         deleteOrder(orderId)
-            .then(() => {
-                alert(`Заказ ${orderId} удален`);
-                loadOrders();
-            })
+            .then(() => setOrders(prev => prev.filter(order => order.id !== orderId)))
             .catch(() => alert("Не удалось удалить заказ"));
     };
 
-    const formatDate = (dateStr) => {
-        if (!dateStr) return "Нет даты";
-
-        return new Date(dateStr).toLocaleString("ru-RU", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-    };
-
-    const loadCategories = () => {
-        setCategoriesLoading(true);
-
-        getCategories()
-            .then(setCategories)
-            .catch(() => alert("Не удалось загрузить категории"))
-            .finally(() => setCategoriesLoading(false));
-    };
-
-    const handleOpenCategories = () => {
-        setCategoryModal(true);
-        loadCategories();
-    };
-
-    const handleAddCategory = () => {
+    const handleAddCategory = (e) => {
+        e?.preventDefault();
         const name = newCategory.trim();
 
         if (!name) {
@@ -102,24 +59,26 @@ const NavBar = ({onSearch, isAdmin, onLogout}) => {
         addCategory(name)
             .then(() => {
                 setNewCategory("");
-                loadCategories();
+                onCategoriesChange?.();
             })
-            .catch(error => alert(error.message || "Не удалось добавить категорию"));
+            .catch(error => alert(
+                error.message === "Category already exists"
+                    ? "Такая категория уже есть"
+                    : error.message || "Не удалось добавить категорию"
+            ));
     };
 
     const handleDeleteCategory = (categoryId) => {
         if (!window.confirm("Удалить эту категорию?")) return;
         deleteCategory(categoryId)
-            .then(loadCategories)
-            .catch(error => alert(error.message || "Не удалось удалить категорию"));
+            .then(() => onCategoriesChange?.())
+            .catch(() => alert("Не удалось удалить категорию. Возможно, в ней есть товары."));
     };
 
-    const handleSaveSettings = (settings) => {
-        setShopSettings(settings)
+    const handleSaveSettings = (newSettings) => {
+        return setShopSettings(newSettings)
             .then(data => {
-                setShopNameState(data.shopName);
-                setTitleColor(data.titleColor);
-                setFont(data.font);
+                setShopSettingsCache(data);
                 setSettingsModal(false);
             })
             .catch(error => {
@@ -134,7 +93,7 @@ const NavBar = ({onSearch, isAdmin, onLogout}) => {
                 onClose={() => setSettingsModal(false)}
             >
                 <ShopSettings
-                    shopName={shopName}
+                    settings={settings || DEFAULT_SETTINGS}
                     onSave={handleSaveSettings}
                     onClose={() => setSettingsModal(false)}
                 />
@@ -144,9 +103,9 @@ const NavBar = ({onSearch, isAdmin, onLogout}) => {
                 onClose={() => setOrderModal(false)}
             >
                 <div className={styles.orderModal}>
-                    <h3>Список заказов</h3>
+                    <h3>Заказы</h3>
                     {loading ? (
-                        <p>Загрузка заказов...</p>
+                        <p className={styles.noOrders}>Загрузка заказов...</p>
                     ) : orders.length === 0 ? (
                         <p className={styles.noOrders}>Заказов пока нет</p>
                     ) : (
@@ -156,39 +115,47 @@ const NavBar = ({onSearch, isAdmin, onLogout}) => {
                                     <div className={styles.orderInfo}>
                                         <div className={styles.orderHeader}>
                                             <span className={styles.orderId}>
-                                                Заказ {order.id}
+                                                Заказ №{order.id}
                                             </span>
-
                                             <span className={styles.orderDate}>
                                                 {formatDate(order.created_at)}
                                             </span>
                                         </div>
-                                        <div>
-                                            <p><strong>Клиент:</strong> {order.customer_name}</p>
-                                            <p><strong>Телефон:</strong> {order.phone}</p>
-                                            <p><strong>Товар ID:</strong> {order.item_id}</p>
-                                            {order.comment && (
-                                                <p><strong>Комментарий:</strong> {order.comment}</p>
+                                        <p><strong>Клиент:</strong> {order.customer_name}</p>
+                                        <p>
+                                            <strong>Телефон:</strong>{" "}
+                                            <a href={`tel:+${order.phone}`}>{order.phone}</a>
+                                        </p>
+                                        <p>
+                                            <strong>Товар:</strong>{" "}
+                                            {order.item_id === null ? (
+                                                <span className={styles.custom}>Индивидуальный заказ</span>
+                                            ) : order.item_title ? (
+                                                <Link to={itemPath(order.item_id, order.item_title)}>{order.item_title}</Link>
+                                            ) : (
+                                                <span className={styles.deleted}>удалён (ID {order.item_id})</span>
                                             )}
-                                        </div>
+                                        </p>
+                                        {order.comment && (
+                                            <p className={styles.comment}><strong>Комментарий:</strong> {order.comment}</p>
+                                        )}
                                     </div>
-                                    <div className={styles.orderActions}>
-                                        <Button
-                                            className={styles.deleteButton}
-                                            onClick={() => handleDeleteOrder(order.id)}
-                                        >
-                                            Удалить
-                                        </Button>
-                                    </div>
+                                    <Button
+                                        variant="secondary"
+                                        className={styles.deleteButton}
+                                        onClick={() => handleDeleteOrder(order.id)}
+                                    >
+                                        Удалить
+                                    </Button>
                                 </div>
                             ))}
                         </div>
                     )}
                     <div className={styles.orderModalFooter}>
-                        <Button onClick={() => setOrderModal(false)}>
+                        <Button variant="secondary" onClick={() => setOrderModal(false)}>
                             Закрыть
                         </Button>
-                        <Button onClick={loadOrders}>
+                        <Button onClick={loadOrders} disabled={loading}>
                             Обновить
                         </Button>
                     </div>
@@ -202,97 +169,75 @@ const NavBar = ({onSearch, isAdmin, onLogout}) => {
                 <div>
                     <h3>Категории</h3>
 
-                    {categoriesLoading ? (
-                        <p>Загрузка категорий...</p>
-                    ) : categories.length === 0 ? (
-                        <p>Категорий пока нет</p>
-                    ) : (
-                        <div>
-                            {categories.map(category => (
-                                <div
-                                    key={category.id}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        gap: "10px",
-                                        marginBottom: "10px"
-                                    }}
-                                >
-                                    <span>{category.name}</span>
-
-                                    <Button onClick={() => handleDeleteCategory(category.id)}>
-                                        Удалить
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    <div>
+                    <form className={styles.categoryForm} onSubmit={handleAddCategory}>
                         <input
+                            className="input"
                             type="text"
                             value={newCategory}
                             onChange={e => setNewCategory(e.target.value)}
-                            placeholder="Название категории"
-                            onKeyDown={e => {
-                                if (e.key === "Enter") handleAddCategory();
-                            }}
+                            placeholder="Новая категория"
                         />
-                        <Button onClick={handleAddCategory}>
-                            Добавить
-                        </Button>
-                    </div>
+                        <Button type="submit">Добавить</Button>
+                    </form>
 
-                    <Button onClick={() => setCategoryModal(false)}>
-                        Закрыть
-                    </Button>
+                    {categories.length === 0 ? (
+                        <p className={styles.noOrders}>Категорий пока нет</p>
+                    ) : (
+                        <ul className={styles.categoryList}>
+                            {categories.map(category => (
+                                <li key={category.id} className={styles.categoryItem}>
+                                    <span>{category.name}</span>
+                                    <Button
+                                        variant="ghost"
+                                        className={styles.deleteButton}
+                                        onClick={() => handleDeleteCategory(category.id)}
+                                        aria-label={`Удалить категорию ${category.name}`}
+                                    >
+                                        Удалить
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             </Modal>
 
-            <div
-                className={styles.navBar}
-            >
-                <div
+            <header className={styles.navBar}>
+                <Link
+                    to="/"
                     className={styles.logo}
-                    style={{color: titleColor,
-                        fontFamily: font}}
+                    style={{
+                        color: settings?.titleColor,
+                        fontFamily: settings?.font
+                    }}
                 >
-                    {shopName}
-                </div>
-                {isAdmin && (
-                    <>
-                        <Button onClick={() => setSettingsModal(true)}>
-                            Настройки магазина
-                        </Button>
-                        <Button onClick={handleOpenOrders}>
-                            Посмотреть заказы
-                        </Button>
-                        <Button onClick={handleOpenCategories}>
-                            Категории
-                        </Button>
-                        <Button onClick={onLogout}>
-                            Выйти из админки
-                        </Button>
-
-                    </>
-                )}
+                    {settings?.shopName ?? " "}
+                </Link>
                 <div className={styles.searchContainer}>
-                    <Field
-                        className={styles.field}
+                    <input
+                        className={styles.searchInput}
+                        type="search"
+                        aria-label="Поиск по названию"
                         placeholder="Поиск по названию"
-                        value={localSearch}
-                        onChange={i => setLocalSearch(i.target.value)}
+                        autoComplete="off"
+                        value={search}
+                        onChange={e => onSearch(e.target.value)}
                     />
-                    <Button
-                        className={styles.searchButton}
-                        onClick={() => onSearch(localSearch)}
-                    >
-                        🔍
-                    </Button>
                     <SocialLinks/>
                 </div>
-            </div>
+            </header>
+
+            {isAdmin && (
+                <div className={styles.adminBar}>
+                    <span className={styles.adminLabel}>Режим администратора</span>
+                    <div className={styles.adminButtons}>
+                        <Button variant="ghost" onClick={handleOpenOrders}>Заказы</Button>
+                        <Button variant="ghost" onClick={() => setCategoryModal(true)}>Категории</Button>
+                        <Button variant="ghost" onClick={() => setSettingsModal(true)}>Настройки</Button>
+                        <Button variant="secondary" onClick={onLogout}>Выйти</Button>
+                    </div>
+                </div>
+            )}
         </>
     );
 };

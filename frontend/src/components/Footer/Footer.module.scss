@@ -1,0 +1,82 @@
+.footer {
+  margin-top: 40px;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 16px;
+  margin-bottom: 40px;
+  padding: 36px 40px;
+  background: var(--turquoise-light);
+  border-left: 4px solid var(--turquoise);
+  border-radius: var(--radius-md);
+
+  h2 {
+    font-size: 2rem;
+    line-height: 1.15;
+  }
+
+  p {
+    max-width: 640px;
+    margin-top: 8px;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 14px;
+    margin-right: 14px;
+    padding: 24px 20px;
+
+    h2 {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+.ctaButton {
+  min-height: 50px;
+  padding: 12px 28px;
+  font-weight: 700;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.bottom {
+  padding: 28px 0 20px;
+  background: var(--bg-dark);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.bottomInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  p {
+    max-width: 560px;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.copy {
+  margin-top: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+
+  @media (max-width: 768px) {
+    text-align: center;
+  }
+}

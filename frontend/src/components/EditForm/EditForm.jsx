@@ -1,33 +1,27 @@
-import { useEffect, useState } from "react";
-import { editItem, getCategories } from "../../api/api.js";
+import { useState } from "react";
+import { editItem } from "../../api/api.js";
 import EditImageForm from "../EditImageForm/EditImageForm.jsx";
-import styles from "../EditForm/EditForm.module.scss";
+import styles from "./EditForm.module.scss";
 import Button from "../Button/Button.jsx";
+import ProductFields from "../ProductFields/ProductFields.jsx";
+import { productFormError, productPayload } from "../../utils/functions.js";
 
 const EditForm = (props) => {
-    const {id, title, description, price, category_id, onClose, updateItems} = props;
+    const {item, categories = [], onClose} = props;
+    const {id} = item;
 
     const [formData, setFormData] = useState({
-        title: title || "",
-        description: description || "",
-        price: price || "",
-        category_id: category_id || "",
+        title: item.title || "",
+        description: item.description || "",
+        price: item.price ?? "",
+        category_id: item.category_id ?? "",
+        materials: item.materials || "",
+        dimensions: item.dimensions || "",
+        status: item.status || "available",
     });
+    const [isSaving, setIsSaving] = useState(false);
 
-    const [categories, setCategories] = useState([]);
-
-    useEffect(() => {
-        getCategories()
-            .then(result => {
-                setCategories(result);
-            })
-            .catch(error => {
-                console.error("ошибка загрузки категорий:", error);
-            });
-    }, []);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const updateField = (name, value) => {
         setFormData((prev) => ({
             ...prev,
             [name]: value
@@ -36,28 +30,20 @@ const EditForm = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (Number.isNaN(Number(formData.price.trim()))) {
-            alert("Цена должна быть числом");
-            return;
-        }
-        if (!formData.category_id) {
-            alert("Выберите категорию");
-            return;
-        }
-        const dataToSend = {};
-        dataToSend.title = formData.title.trim();
-        dataToSend.price = formData.price.trim() || price;
-        dataToSend.description = formData.description.trim();
-        dataToSend.category_id = Number(formData.category_id);
+        if (isSaving) return;
 
-        editItem(id, dataToSend)
-            .then(() => {
-                alert("Товар обновлён");
-                onClose();
-                updateItems();
-            })
+        const error = productFormError(formData);
+        if (error) {
+            alert(error);
+            return;
+        }
+
+        setIsSaving(true);
+        editItem(id, productPayload(formData))
+            .then(() => onClose())
             .catch((error) => {
                 alert(`Ошибка при обновлении: ${error.message}`);
+                setIsSaving(false);
             });
     };
 
@@ -66,71 +52,22 @@ const EditForm = (props) => {
             <h3>Редактировать товар</h3>
 
             <div className={styles.editInputs}>
-                <label>
-                    Название
-                    <input
-                        type="text"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                    />
-                </label>
-
-                <label>
-                    Описание
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                    />
-                </label>
-
-                <label>
-                    Цена
-                    <input
-                        type="text"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleChange}
-                    />
-                </label>
-                <label>
-                    Категория
-                    <select
-                        name="category_id"
-                        value={formData.category_id}
-                        onChange={handleChange}
-                    >
-                        <option value="">
-                            Выберите категорию
-                        </option>
-
-                        {categories.map((category) => (
-                            <option
-                                key={category.id}
-                                value={category.id}
-                            >
-                                {category.name}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                <ProductFields values={formData} onChange={updateField} categories={categories}/>
             </div>
 
-            <p>Изменения картинок сохраняются автоматически</p>
+            <div className={styles.imagesHeader}>
+                <span>Фотографии</span>
+                <span className={styles.hint}>сохраняются автоматически</span>
+            </div>
 
-            <EditImageForm
-                className={styles.editImageForm}
-                id={id}
-            />
+            <EditImageForm id={id}/>
 
-            <div>
-                <Button type="submit">
-                    Сохранить
-                </Button>
-
-                <Button type="button" onClick={onClose}>
+            <div className={styles.actions}>
+                <Button type="button" variant="secondary" onClick={onClose} disabled={isSaving}>
                     Отмена
+                </Button>
+                <Button type="submit" disabled={isSaving}>
+                    {isSaving ? 'Сохранение...' : 'Сохранить'}
                 </Button>
             </div>
         </form>

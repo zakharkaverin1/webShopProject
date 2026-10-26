@@ -1,37 +1,20 @@
 import {apiFetch} from "./apiUtils.js";
 
-export const addItemAPI = (formData) => {
+export const addItemAPI = (fields, images = []) => { // [ОПТ]
     const body = new FormData();
-    body.append('itemTitle', formData.itemTitle);
-    body.append('itemPrice', formData.itemPrice);
-    body.append('itemDescription', formData.itemDescription);
-    body.append('category_id', formData.category_id);
-    formData.itemImages.forEach((file) => {
-        body.append('itemImages', file);
-    });
+    Object.entries(fields).forEach(([name, value]) => body.append(name, value)); // [ОПТ]
+    images.forEach((file) => body.append('itemImages', file)); // [ОПТ]
     return apiFetch('/api/products', {
         method: 'POST',
         body,
     });
 };
 
-export const getAllItems = () => {
-    return apiFetch('/api/products', {
-        method: 'GET',
-    });
-};
+export const getAllItems = () => apiFetch('/api/products'); // [ОПТ]
 
-export const editItem = (id, { title, price, description, category_id }) => {
-    return apiFetch(`/api/products/${id}`, {
-        method: 'PUT',
-        body: {
-            title,
-            price,
-            description,
-            category_id,
-        },
-    });
-};
+export const getItem = (id) => apiFetch(`/api/products/${id}`); // [ОПТ]
+
+export const editItem = (id, fields) => apiFetch(`/api/products/${id}`, {method: 'PUT', body: fields}); // [ОПТ]
 
 export const deleteItem = (id) => {
     return apiFetch(`/api/products/${id}`, {
@@ -42,15 +25,24 @@ export const deleteItem = (id) => {
 
 export const checkAdmin = async () => {
     try {
-        return await apiFetch('/api/check-admin', {method: 'GET'});
+        const data = await apiFetch('/api/check-admin'); // [ОПТ] [БЕЗОП] ответ содержит CSRF-токен, его запоминает apiFetch
+        return Boolean(data?.isAdmin);
     } catch {
-        return undefined;
+        return false;
     }
+};
+
+export const verifyAdmin = (password) => {
+    return apiFetch('/api/verify-admin', {
+        method: 'POST',
+        body: { password },
+    });
 };
 
 export const uploadImages = (productId, files) => {
     const body = new FormData();
-    files.forEach((file) => {
+    // files может быть FileList, у которого нет forEach
+    Array.from(files).forEach((file) => {
         body.append('itemImages', file);
     });
     return apiFetch(`/api/products/${productId}/images`, {
@@ -72,15 +64,9 @@ export const replaceItemImage = (productId, file, imageIndex = 0) => {
     )
 };
 
-export const deleteItemImage = (productId, imageIndex) => {
-    const index = Number(imageIndex);
-    return apiFetch(
-        `/api/products/${productId}/image/${index}`,
-        {
-            method: 'DELETE',
-        }
-    )
-};
+export const deleteItemImage = (productId, imageIndex) => apiFetch(
+    `/api/products/${productId}/image/${imageIndex}`, {method: 'DELETE'}
+);
 
 export const createOrderAPI = (orderData) => {
     return apiFetch('/api/orders', {
@@ -89,11 +75,7 @@ export const createOrderAPI = (orderData) => {
     });
 };
 
-export const getAllOrders = () => {
-    return apiFetch('/api/orders', {
-        method: "GET",
-    })
-};
+export const getAllOrders = () => apiFetch('/api/orders'); // [ОПТ]
 
 export const deleteOrder = (orderId) => {
     return apiFetch(`/api/orders/${orderId}`, {
@@ -101,11 +83,7 @@ export const deleteOrder = (orderId) => {
     })
 };
 
-export const getCategories = () => {
-    return apiFetch('/api/categories', {
-        method: 'GET',
-    });
-};
+export const getCategories = () => apiFetch('/api/categories'); // [ОПТ]
 
 export const addCategory = (name) => {
     return apiFetch('/api/categories', {
@@ -120,11 +98,7 @@ export const deleteCategory = (categoryId) => {
     });
 };
 
-export const getShopSettings = () => {
-    return apiFetch('/api/shopSettings', {
-        method: 'GET',
-    })
-};
+export const getShopSettings = () => apiFetch('/api/shopSettings'); // [ОПТ]
 
 export const setShopSettings = (settings) => {
     return apiFetch('/api/shopSettings', {

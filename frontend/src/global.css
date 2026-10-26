@@ -2,52 +2,179 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
 }
 
 :root {
-    /* backgrounds */
-    --bg-main: #F7F3EC;
-    --bg-surface: #FCFBF8;
-    --bg-secondary: #F0EBE2;
+    /* шрифты */
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    /* фон — чистый белый */
+    --bg-main: #FFFFFF;
+    --bg-surface: #FFFFFF;
+    --bg-secondary: #F2F6F6;
+    --bg-dark: #0B4B4A;
 
     /* navbar */
-    --navbar-bg: #FBFAF8;
-    --navbar-border: #E3DDD3;
-    --navbar-hover: #F5F2EC;
-    --navbar-text: #38342F;
+    --navbar-bg: #FFFFFF;
+    --navbar-border: #E1E9E9;
+    --navbar-hover: #EAF4F4;
+    --navbar-text: #16302F;
+
+    /* бирюзовый — основной цвет бренда */
+    --turquoise: #0F8A87;
+    --turquoise-dark: #0B6E6C;
+    --turquoise-light: #E3F3F2;
+
+    /* оранжевый — акцент для главных действий */
+    --orange: #E8641E;
+    --orange-dark: #C9520F;
+    --orange-light: #FDEDE3;
 
     /* buttons */
-    --btn-primary: #5A7A62;
-    --btn-primary-hover: #4C6953;
-    --btn-primary-active: #405947;
+    --btn-primary: #0F8A87;
+    --btn-primary-rgb: 15, 138, 135;
+    --btn-primary-hover: #0B6E6C;
+    --btn-primary-active: #095C5A;
+    --primary-light: #E3F3F2;
 
-    --btn-secondary: #E6E0D7;
-    --btn-secondary-hover: #D9D1C5;
-    --btn-secondary-text: #38342F;
+    --btn-secondary: #EEF3F3;
+    --btn-secondary-hover: #E1EAEA;
+    --btn-secondary-text: #16302F;
 
-    --btn-success: #6A8D72;
-    --btn-warning: #A78453;
+    --btn-danger: #C8402F;
+    --btn-danger-hover: #A93526;
 
     /* borders */
-    --border-default: #D8D1C7;
-    --border-light: #E9E4DC;
-    --border-focus: #5A7A62;
+    --border-default: #D3DFDF;
+    --border-light: #E6EEEE;
+    --border-focus: #0F8A87;
 
     /* text */
-    --text-primary: #38342F;
-    --text-secondary: #6A635A;
-    --text-tertiary: #9A9388;
+    --text-primary: #16302F;
+    --text-secondary: #4D6463;
+    --text-tertiary: #7F9392;
+    --text-muted: #7F9392;
     --text-inverse: #FFFFFF;
+    --price: #16302F;
 
-    /* shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    /* тени — минимальные, дизайн плоский */
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: 0 8px 24px rgba(22, 48, 47, 0.12);
 
     /*roundings */
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
     --radius-full: 9999px;
+
+    --transition: 0.15s ease;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* общие поля форм */
+.input,
+.select,
+.textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 15px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.select {
+    cursor: pointer;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(var(--btn-primary-rgb), 0.15);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
 }

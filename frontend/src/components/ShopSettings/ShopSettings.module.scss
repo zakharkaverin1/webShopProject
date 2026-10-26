@@ -1,44 +1,50 @@
 .settings {
-  width: 400px;
-  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.title {
-  margin-bottom: 20px;
+.preview {
+  padding: 16px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow-wrap: anywhere;
 }
 
-.section {
-  margin-bottom: 15px;
-}
-
-.label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.input,
-.select {
-  width: 100%;
-  padding: 8px;
+.row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
 }
 
 .colorInput {
-  width: 50px;
-  height: 35px;
+  width: 64px;
+  height: 44px;
+  padding: 2px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  cursor: pointer;
 }
 
 .actions {
   display: flex;
+  justify-content: flex-end;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 4px;
 }
 
-@media (max-width: 768px) {
-  .settings {
-    width: 100%;
-  }
-
+@media (max-width: 480px) {
   .actions {
-    flex-direction: column;
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
   }
 }
